@@ -46,7 +46,7 @@ McKinsey's **"Tech Debt: Reclaiming Tech Equity"** (2020) quantified the busines
 
 In the US alone, CISQ estimated the total cost of poor software quality at **$2.41 trillion**, with $1.52 trillion in accumulated technical debt [5].
 
-## 3 AI Accelerates Software Rot
+## 3 Evidence That AI Accelerates Software Rot
 
 The evidence presented in this report suggests that AI doesn't eliminate rot; it **compresses the timeline**.
 
@@ -88,7 +88,7 @@ The empirical study of 207 open-source Java projects identified four release-wis
 
 ### 4.2 Architecture at Scale: Meta's Approach
 
-Meta's WhatsApp engineering team published their experience deploying AI code generation at enterprise scale over 25 months, producing 3,000+ accepted code changes [17]. Their key finding: **architectural guardrails are essential**. Their system uses cross-session memory, explicit rules, and retrieval-augmented generation to preserve architectural coherence and enforce engineering standards [17].
+Meta's WhatsApp engineering team published their experience deploying AI code generation at enterprise scale over 25 months, producing 3,000+ accepted code changes [17]. Their key finding: **architectural guardrails are essential**. Their system uses cross-session memory, explicit rules, and retrieval-augmented generation for knowledge grounding to enforce engineering standards [17].
 
 ### 4.3 What Researchers and Practitioners Say
 
@@ -135,7 +135,7 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 ## 7 Summary of Findings
 
 - **Software rot is real and costly.** 45% of the world's code is fragile [3], and tech debt accounts for 20–40% of technology estate value [4]. Lehman's Laws confirm that complexity increases continuously in evolving systems [1].
-- **AI accelerates rot.** Code churn is projected to double [7], refactoring has declined from 25% to less than 10% of changed lines [8], and code complexity increases 41.6% in AI-assisted repositories [26].
+- **Evidence suggests AI accelerates rot.** Code churn is projected to double [7], refactoring has declined from 25% to less than 10% of changed lines [8], and code complexity increases 41.6% in AI-assisted repositories [26].
 - **Current AI tools struggle with architectural reasoning.** They require human oversight for system-level concerns [15] and produce "Hallucinated Coupling" that violates design principles [16].
 - **Architecture amplifies AI's benefits.** DORA research shows AI amplifies existing practices, both good and bad [13]. Meta's enterprise deployment found architectural guardrails essential at scale [17].
 - **Developers see it too.** 46% distrust AI output vs. 33% who trust it, and favorability toward AI tools dropped from 70%+ to 60% year-over-year [24].
@@ -168,7 +168,7 @@ https://arxiv.org/html/2601.06266v1
 [16] *Quantitative Analysis of Technical Debt and Pattern Violation in LLM Architectures.* Introduces "Hallucinated Coupling" metric for AI-generated code. arXiv, December 2025.
 https://arxiv.org/html/2512.04273
 
-[17] **Meta (2026):** *WhatsCode: Large-Scale GenAI Deployment for Developer Efficiency at WhatsApp.* 25-month deployment producing 3,000+ accepted code changes with guardrails for architectural coherence. Accepted at ICSE-SEIP 2026.
+[17] **Meta (2026):** *WhatsCode: Large-Scale GenAI Deployment for Developer Efficiency at WhatsApp.* 25-month deployment producing 3,000+ accepted code changes with guardrails for knowledge grounding. Accepted at ICSE-SEIP 2026.
 https://arxiv.org/html/2512.05314
 
 ### Established Research Programs
