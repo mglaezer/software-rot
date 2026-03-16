@@ -118,11 +118,9 @@ The empirical findings above are mirrored in large-scale developer surveys. Acro
 
 The **2025 Stack Overflow Developer Survey** — the largest annual survey of professional developers — reveals a widening trust gap [24]:
 
-- Developer trust in AI code accuracy **fell from 40% to 29%** year-over-year.
 - **46% distrust** AI output, versus only 33% who trust it; just **3% "highly trust"** it.
-- Positive favorability toward AI tools **dropped from 72% to 60%**.
-- **66%** are frustrated by AI solutions that are "almost right but not quite."
-- Yet **84% continue to use AI tools** despite this distrust — a usage-trust paradox that suggests adoption is driven by organizational pressure rather than confidence.
+- Positive favorability toward AI tools **dropped from over 70% to 60%** year-over-year.
+- **80%** of developers currently use AI tools despite this distrust — a usage-trust paradox that suggests adoption is driven by organizational pressure rather than confidence.
 
 ### 5.2 The Verification Gap (Sonar 2026, n=1,100+)
 
@@ -132,7 +130,7 @@ Sonar's **2026 State of Code Developer Survey** quantifies the gap between AI ad
 - Only **48%** always verify AI code before committing — meaning half of all AI-generated code enters production without full review.
 - **61%** agree AI often produces code that "looks correct but isn't reliable."
 - AI now accounts for **42% of committed code**, expected to rise to **65% by 2027**.
-- **38%** skip verification because "it takes longer than reviewing code produced by colleagues."
+- **38%** say reviewing AI-generated code requires more effort than reviewing code written by human colleagues.
 
 The combination of low trust, low verification, and rapidly increasing AI code volume is a formula for accelerating rot.
 
@@ -140,24 +138,24 @@ The combination of low trust, low verification, and rapidly increasing AI code v
 
 Developer community surveys and practitioner reports reinforce the empirical data:
 
-- **40%** of developers say AI has increased technical debt by creating unnecessary or duplicative code (LeadDev 2025 Survey) [26].
-- A **Carnegie Mellon study** (2025, 807 repositories) found that code complexity increased faster in AI-assisted repositories than in control groups after Cursor adoption [27].
-- **16 of 18 CTOs** surveyed reported production disasters caused by AI-generated or "vibe-coded" software (Final Round AI, 2025) [28].
+- **40%** of developers say AI has increased technical debt by creating unnecessary or duplicative code (Sonar 2026) [25].
+- A **Carnegie Mellon study** (806 repositories) found that code complexity increased by **41%** and static analysis warnings by **30%** in AI-assisted repositories after Cursor adoption [26].
+- **16 of 18 CTOs and engineering leaders** surveyed reported production disasters caused by AI-generated or "vibe-coded" software (Final Round AI, 2025) [27].
 
 ### 5.4 Sentiment Summary
 
 | Survey | Sample Size | Key Metric | Value |
 |---|---|---|---|
-| Stack Overflow 2025 [24] | 49,000 devs | Trust in AI accuracy | 29% (↓ from 40%) |
 | Stack Overflow 2025 [24] | 49,000 devs | Distrust AI output | 46% |
-| Stack Overflow 2025 [24] | 49,000 devs | Favorable toward AI tools | 60% (↓ from 72%) |
+| Stack Overflow 2025 [24] | 49,000 devs | Favorable toward AI tools | 60% (↓ from 70%+) |
 | Sonar 2026 [25] | 1,100+ devs | Don't fully trust AI code | 96% |
 | Sonar 2026 [25] | 1,100+ devs | Always verify before committing | 48% |
 | Sonar 2026 [25] | 1,100+ devs | AI code "looks correct but isn't reliable" | 61% |
-| LeadDev 2025 [26] | Eng leaders | AI has increased tech debt | 40% |
-| Final Round AI 2025 [28] | 18 CTOs | Reported AI production disasters | 89% (16/18) |
+| Sonar 2026 [25] | 1,100+ devs | AI has increased tech debt | 40% |
+| CMU 2026 [26] | 806 repos | Code complexity increase post-AI | +41% |
+| Final Round AI 2025 [27] | 18 eng leaders | Reported AI production disasters | 89% (16/18) |
 
-Across all surveys, developer sentiment toward AI code quality is **overwhelmingly negative** (87% of tracked data points express concern), with **zero surveys** reporting net positive sentiment toward AI code reliability. The pattern is consistent: developers adopt AI tools for speed but distrust the output, and verification practices have not kept pace with adoption.
+Across all surveys, developer sentiment toward AI code quality is **consistently negative**, with **no survey** reporting net positive sentiment toward AI code reliability. The pattern is clear: developers adopt AI tools for speed but distrust the output, and verification practices have not kept pace with adoption.
 
 ## 6 Managed vs. Unmanaged: The Performance Gap
 
@@ -168,7 +166,7 @@ Across all surveys, developer sentiment toward AI code quality is **overwhelming
 | Code Issues per PR | 1.7x More Issues; 75% More Logic Errors [14] | Baseline |
 | Refactoring Rate | Declining (<10%) [8] | Active (Late Active Pattern) [2] |
 | Delivery Stability | Negative Correlation [13] | Positive Correlation [13] |
-| Developer Trust | 29% trust accuracy [24]; 96% don't fully trust [25] | Baseline (human-reviewed) |
+| Developer Trust | 46% distrust [24]; 96% don't fully trust [25] | Baseline (human-reviewed) |
 
 ## 7 Summary of Findings
 
@@ -176,7 +174,7 @@ Across all surveys, developer sentiment toward AI code quality is **overwhelming
 - **AI accelerates rot.** Code churn has nearly doubled [7][8], refactoring has declined by 60% [8], and AI-generated PRs contain 1.7x more issues [14].
 - **AI cannot replace architecture.** Current AI tools lack architectural reasoning [15][16] and produce "Hallucinated Coupling" that violates design principles invisibly.
 - **Architecture amplifies AI's benefits.** DORA research shows AI makes good practices more effective [13]. Meta's enterprise deployment proves architectural guardrails are essential at scale [17].
-- **Developers see it too.** Trust in AI code accuracy dropped from 40% to 29% in one year [24]; 96% don't fully trust AI-generated code [25]; 40% say AI has increased technical debt [26].
+- **Developers see it too.** 46% distrust AI output vs. 33% who trust it [24]; 96% don't fully trust AI-generated code [25]; 40% say AI has increased technical debt [25].
 - **Refactoring discipline is the key.** The Late Active refactoring pattern is the most effective way to manage complexity [2], and leading practitioners agree that TDD and design discipline are more important than ever [18][19][20].
 
 ## 8 Key Studies and Source Links
@@ -250,17 +248,14 @@ https://github.blog/news-insights/research/research-quantifying-github-copilots-
 [23] **McKinsey & Company (2022):** *Demystifying Digital Dark Matter: A New Standard to Tame Technical Debt.* Analysis of 220 companies across 5 geographies and 7 sectors linking technical debt scores to revenue growth.
 https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/demystifying-digital-dark-matter-a-new-standard-to-tame-technical-debt
 
-[24] **Stack Overflow (2025):** *2025 Developer Survey — AI Section.* Annual survey of 49,000 developers showing declining trust in AI code accuracy and a usage-trust paradox.
+[24] **Stack Overflow (2025):** *2025 Developer Survey — AI Section.* Annual survey of 49,000 developers. 46% distrust AI output vs. 33% who trust it; favorability dropped from 70%+ to 60%.
 https://survey.stackoverflow.co/2025/ai/
 
 [25] **Sonar (2026):** *State of Code Developer Survey.* Survey of 1,100+ developers finding 96% don't fully trust AI-generated code and only 48% always verify before committing.
 https://www.sonarsource.com/blog/state-of-code-developer-survey-report-the-current-reality-of-ai-coding/
 
-[26] **LeadDev (2025):** *How AI Generated Code Accelerates Technical Debt.* Survey finding 40% of developers say AI has increased technical debt through unnecessary or duplicative code.
-https://leaddev.com/technical-direction/how-ai-generated-code-accelerates-technical-debt
+[26] **Carnegie Mellon University (2026):** *Speed at the Cost of Quality: How Cursor AI Increases Short-Term Velocity and Long-Term Complexity in Open-Source Projects.* Study of 806 repositories finding +41% code complexity and +30% static analysis warnings in AI-assisted repos. Published at MSR '26.
+https://arxiv.org/abs/2511.04427
 
-[27] **Carnegie Mellon University (2025):** *Speed at the Cost of Quality: Automated Code Generation and Code Quality.* Study of 807 repositories finding AI-assisted repos show faster complexity growth.
-https://arxiv.org/pdf/2511.04427
-
-[28] **Final Round AI (2025):** *Vibe Coding Failures.* Survey of 18 CTOs, 16 of whom reported production disasters caused by AI-generated code.
-https://www.finalroundai.com/blog/vibe-coding-failures-that-prove-ai-cant-replace-developers-yet
+[27] **Final Round AI (2025):** *What CTOs Really Think About Vibe Coding.* Survey of 18 CTOs and engineering leaders, 16 of whom reported production disasters caused by AI-generated code.
+https://www.finalroundai.com/blog/what-ctos-think-about-vibe-coding
