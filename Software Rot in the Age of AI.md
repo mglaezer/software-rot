@@ -145,19 +145,37 @@ Making code safely disposable — even partially — requires deliberate archite
 
 ### 5.4 Intent vs. Behavior: Why Code Becomes the Source of Truth
 
-The analysis above might appear to argue against specification-driven development: if the code is the most complete specification available, why write specs at all? The resolution lies in recognizing that specs and code are sources of truth for *different things*.
+The analysis above might appear to argue against specification-driven development: if the code is the most complete specification available, why write specs at all? The resolution lies in recognizing that every non-trivial system has *two* sources of truth, not one — and they answer different questions:
 
 Specifications capture **intent** — what the system *should* do. Contracts, interfaces, invariants, test expectations. They are deliberately incomplete: a good API contract specifies what a function promises to callers, not how it fulfills that promise. This incompleteness is a feature, not a flaw. It is what allows implementations to change without breaking consumers.
 
 Code captures **behavior** — what the system *actually* does. This includes everything the specification intended, but also everything it did not: the edge case a developer handled after a production incident two years ago, the timing workaround that prevents a race condition nobody documented, the error recovery path that accumulated through three rounds of bug fixes. Over time, the behavior of a non-trivial component outgrows its specification. The code becomes the authoritative record of what the system does, including things nobody planned or wrote down.
 
-In a healthy system, intent and behavior overlap substantially. In a rotting system, they diverge — the code does things nobody intended, and the specification (if it still exists) describes things the code no longer does. This divergence is itself a form of software rot.
+These are not competing sources of truth — they are complementary. The spec answers "what should this do?" The code answers "what does this actually do?" Problems arise when one is mistaken for the other: trusting the spec when the code has diverged leads to bugs in production; treating the code as the design document when the original intent has been buried under years of patches leads to rot. In a healthy system, intent and behavior overlap substantially. In a rotting system, they diverge — the code does things nobody intended, and the specification (if it still exists) describes things the code no longer does. This divergence is itself a form of software rot.
 
 Specification-driven development — API-first design, design-by-contract, TDD — does not claim that specs replace code as the source of truth. It claims that specifying intent *first* produces better code, because it forces thinking about boundaries and contracts before implementation. The code then fills in everything the spec deliberately left out. Good specs make implementations *more* disposable by constraining what a regenerated version must satisfy. But "more disposable" is not "fully disposable." The gap between intent (what was specified) and behavior (what the code actually does) is where regeneration breaks — and where internal design quality still matters.
 
-The disposable code argument fails precisely because it requires specifications to capture *behavior*, not just *intent*. Regenerating a component from its original spec recovers the intended behavior but loses the accumulated behavior that the system has come to depend on. No amount of specification discipline closes this gap entirely, because behavior accumulates through use, not through design.
+The disposable code argument fails precisely because it conflates these two sources of truth. It assumes that regenerating from intent (the spec) will recover behavior (what the code does). It will not. Regeneration recovers the intended behavior but loses the accumulated behavior that the system has come to depend on. No amount of specification discipline closes this gap entirely, because behavior accumulates through use, not through design.
 
-### 5.5 Managed vs. Unmanaged: The Performance Gap
+### 5.5 Spec-Driven Development: The Industry Response
+
+The problems documented in Section 3 — AI generating code without architectural awareness — have not gone unnoticed. A significant industry movement toward **spec-driven development (SDD)** has emerged, with major open-source frameworks (GitHub's spec-kit, OpenSpec, BMAD-METHOD) attracting tens of thousands of GitHub stars, and companies like AWS (Kiro) and Tessl building commercial products around the concept.
+
+The movement organizes around three levels of specification rigor:
+
+- **Spec-first.** Write a specification before the task, then let AI implement it. The spec may be discarded afterward. This is essentially TDD and API-first design applied to AI-assisted workflows — proven practice with a new interface.
+- **Spec-anchored.** The specification persists and evolves alongside the code over its lifecycle. Spec and code are kept in sync through continuous validation. This is the alignment problem: maintaining the relationship between intent and behavior as both evolve.
+- **Spec-as-source.** Humans maintain *only* the specification. Code is generated, marked as disposable, and regenerated whenever the spec changes. This is the most ambitious vision — and the one that runs directly into the limitations analyzed in Sections 5.3 and 5.4.
+
+The analysis in this report provides a framework for understanding why the spectrum gets harder as it moves toward full disposability. Spec-first works because it specifies intent and lets the implementation handle behavior. Spec-as-source requires specifications to capture behavior — the gap between intent and accumulated behavior that Section 5.4 identifies as fundamentally difficult to close.
+
+**AI's most valuable role may not be generating code.** A parallel trend uses AI to *maintain architectural integrity* rather than produce more code. Tools like CodeScene expose code health metrics as quality gates for AI-generated code. Architecture governance platforms like ArchGuard use AI to analyze and enforce structural constraints. Multi-agent review systems dedicate separate agents to writing, critiquing, testing, and validating architectural alignment. This reframes AI from code producer to architectural integrity tool — using it to detect and repair the divergence between intent and behavior rather than to generate more behavior.
+
+**The waterfall risk.** ThoughtWorks and Martin Fowler have noted that rigid specifications could recreate waterfall's problems — slow feedback, premature commitment, specs that calcify before implementation reveals their flaws. The intent/behavior framework from Section 5.4 clarifies this risk: specifications that capture *intent* (contracts, invariants, boundaries) remain stable as implementations change. Specifications that attempt to capture *behavior* (detailed implementation requirements) calcify because behavior evolves through use. The SDD movement will succeed to the extent that it specifies intent and avoids specifying behavior.
+
+**The fundamental bet** underlying spec-driven development is that if you can precisely specify what you want, AI becomes a reliable generator. The evidence in this report suggests this bet is partially correct — spec-first and spec-anchored approaches align with the proven practices in Section 2. But complete specification remains impractical for the reasons Sections 5.3 and 5.4 describe. The industry is learning in real time where that ceiling is.
+
+### 5.6 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Architecturally Managed |
 |---|---|---|
@@ -167,7 +185,7 @@ The disposable code argument fails precisely because it requires specifications 
 | Delivery Stability | AI amplifies weaknesses [18] | AI amplifies strengths [18] |
 | Developer Trust | 46% distrust [17] | Baseline (human-reviewed) |
 
-### 5.6 Synthesis
+### 5.7 Synthesis
 
 **The following is an interpretive conclusion drawn from the evidence presented, not a direct empirical finding.**
 
@@ -185,6 +203,7 @@ The logic runs: architecture prevents rot (established across decades of indepen
 - **Current AI tools struggle with architectural reasoning.** They require human oversight for system-level concerns [14] and produce "Hallucinated Coupling" that violates design principles [15].
 - **AI amplifies existing practices.** DORA research shows AI magnifies both strengths and weaknesses [18]. Meta's enterprise deployment found architectural guardrails essential at scale [19].
 - **Developers see it too.** 46% distrust AI output vs. 33% who trust it, and favorability toward AI tools dropped from 70%+ to 60% year-over-year, even as 81% continue using them [17].
+- **The industry is responding with spec-driven development.** Frameworks like GitHub's spec-kit and OpenSpec move architectural intent upstream into specifications that constrain AI generation. Spec-first approaches align with proven practice; fully disposable code (spec-as-source) remains limited by the gap between intent and accumulated behavior.
 
 ---
 
