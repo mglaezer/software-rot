@@ -114,7 +114,7 @@ The 2025 Stack Overflow Developer Survey — the largest annual survey of profes
 
 ### 5.1 AI as Amplifier
 
-Google's DORA program — the largest ongoing study of software delivery performance — found in its 2025 report that AI's primary role is as an **amplifier**, magnifying an organization's existing strengths and weaknesses [18]. This finding bridges Sections 2 and 3: if architecture prevents rot (Section 2) and AI amplifies what exists (this finding), then architecture determines whether AI helps or hurts.
+Google's DORA program — the longest-running academically rigorous research program on software delivery performance — found in its 2025 report that AI's primary role is as an **amplifier**, magnifying an organization's existing strengths and weaknesses [18]. This finding bridges Sections 2 and 3: if architecture prevents rot (Section 2) and AI amplifies what exists (this finding), then architecture determines whether AI helps or hurts.
 
 ### 5.2 Architecture at Scale
 
@@ -130,6 +130,12 @@ The argument breaks down in several ways:
 - **Internal complexity leaks through interfaces.** Performance characteristics, resource usage patterns, and error handling behavior are not captured by API contracts alone. Replacing an implementation can change observable system behavior even when the interface is preserved.
 - **Component size.** The argument scales poorly. A 50-line function is safely disposable; a 5,000-line service with dozens of integration points is not.
 - **Test completeness.** Tests capture *known* behavior, not the full set of accumulated edge cases. Regenerated code that passes existing tests may still fail on scenarios the original code handled but no test explicitly verified.
+
+Moreover, the disposable code approach doesn't eliminate complexity — it shifts it from implementation to specification. To safely regenerate a component, you must fully specify not just its inputs and outputs but its behavioral contract for all edge cases, its performance characteristics, its error semantics, and its side effects. In practice, writing such a complete specification is often harder than writing the implementation. This is why formal specification languages (TLA+, Z, Alloy) exist — and why they are rarely used. For most real-world systems, the code *is* the most complete specification available.
+
+Hyrum's Law sharpens the point: "With a sufficient number of users of an API, all observable behaviors of your system will be depended on by somebody." Even with a formally correct interface contract, consumers will depend on incidental implementation behaviors — ordering, timing, error message wording — that no specification captures. Regenerate with a different implementation, and those implicit contracts break.
+
+This does *not* argue against specification-driven development. API-first design, design-by-contract, and TDD all work precisely because they specify *boundaries* — the important contracts and invariants — while deliberately leaving internal behavior unspecified. The disposable code argument asks specifications to do something fundamentally different: capture the *complete* behavior of an implementation so it can be thrown away. Specification-driven development says "specify enough to constrain"; disposable code requires "specify everything to replace." The former is proven practice; the latter is rarely practical.
 
 The irony is instructive: making code safely disposable requires exactly the architectural discipline — clear interfaces, comprehensive contracts, modular boundaries — that prevents rot in the first place.
 
