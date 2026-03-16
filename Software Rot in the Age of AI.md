@@ -19,6 +19,8 @@ This report examines software rot — the progressive decay of software systems 
 
 **Scope note:** This report focuses on software rot — structural decay, maintainability, and technical debt. Security vulnerabilities in AI-generated code are a significant and well-documented concern, but are outside the scope of this analysis.
 
+**A plain-language summary** of this report is available in [Software Rot in the Age of AI — Summary.md](Software%20Rot%20in%20the%20Age%20of%20AI%20—%20Summary.md) for readers who prefer a less technical overview.
+
 ---
 
 ## 1 What Is Software Rot?
