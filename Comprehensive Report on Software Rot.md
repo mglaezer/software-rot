@@ -20,7 +20,7 @@ The report's central thesis — that software architecture and design discipline
 
 **Software Rot** (or "Bit Rot") refers to the progressive degradation of a software system's usefulness or maintainability over time, even if the code itself remains unchanged. The concept was formalized by David Parnas, who identified how software "ages" as its environment evolves while its internal structure remains static [28].
 
-This phenomenon is well-established in software engineering. Lehman's Laws of Software Evolution, empirically validated across open-source projects including Apache Tomcat and Apache Ant, confirm that evolving software systems exhibit both continuing growth in size and increasing complexity over time [1].
+This phenomenon is well-established in software engineering. Lehman's Laws of Software Evolution have been widely validated empirically, confirming that evolving software systems exhibit continuing growth in size and increasing complexity over time. A study of Apache Tomcat and Apache Ant further found that software quality also degrades over time, consistent with these laws [1].
 
 ### 1.1 Why Rot Accelerates
 
@@ -39,7 +39,7 @@ The **2025 "Coding in the Red" Report** by CAST analyzed over 10 billion lines o
 
 ### 2.2 The Business Impact (McKinsey)
 
-McKinsey's **"Tech Debt: Reclaiming Tech Equity"** (2020), based on a survey of 50 CIOs in financial-services and technology companies, quantified the business consequences [4]:
+McKinsey's **"Tech Debt: Reclaiming Tech Equity"** (2020) quantified the business consequences [4]:
 
 - Tech debt accounts for **20 to 40 percent** of the value of companies' entire technology estate before depreciation.
 - **10 to 20 percent** of the technology budget for new products is diverted to resolving debt-related issues.
@@ -145,7 +145,7 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 
 ### Peer-Reviewed Research
 
-[1] **Lehman's Laws Validation:** *An Empirical Study of Lehman's Law on Software Quality Evolution.* Validates Lehman's laws of increasing size and complexity using Apache Tomcat and Ant projects. Published in *International Journal of Software Informatics*, 2013.
+[1] **Lehman's Laws — Quality Evolution:** *An Empirical Study of Lehman's Law on Software Quality Evolution.* Studies software quality degradation over time in Apache Tomcat and Ant projects, treating Lehman's size/complexity laws as established and extending validation to the quality dimension. Published in *International Journal of Software and Informatics*, 2013.
 https://www.researchgate.net/publication/259979752_An_Empirical_Study_of_Lehmans_Law_on_Software_Quality_Evolution
 
 [2] **ACM (2025):** *An Empirical Study on Release-Wise Refactoring Patterns.* Study of 207 open-source Java projects identifying four release-wise refactoring patterns. Published in *Proceedings of the ACM on Software Engineering* (FSE 2025).
@@ -184,7 +184,7 @@ https://dora.dev/research/2025/dora-report/
 [3] **CAST Software Intelligence (2025):** *Coding in the Red: The State of Global Technical Debt.* Industry report analyzing 10 billion lines of code across 17 countries. CAST is a commercial code analysis vendor; figures verified via GlobeNewsWire press release.
 https://www.castsoftware.com/ciu/coding-in-the-red-technical-debt-report-2025
 
-[4] **McKinsey & Company (2020):** *Tech Debt: Reclaiming Tech Equity.* Survey of 50 CIOs on tech debt's impact on technology estate value and budgets.
+[4] **McKinsey & Company (2020):** *Tech Debt: Reclaiming Tech Equity.* CIO survey on tech debt's impact on technology estate value and budgets.
 https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/tech-debt-reclaiming-tech-equity
 
 [5] **CISQ (2022):** *The Cost of Poor Software Quality in the US.* Estimates $2.41 trillion total cost and $1.52 trillion in accumulated technical debt. CISQ is co-founded by OMG and Carnegie Mellon's Software Engineering Institute.
