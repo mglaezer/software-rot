@@ -2,6 +2,8 @@
 
 **Technical Analysis Report**
 
+**Compiled by Maxim Glaezer**
+
 **March 15, 2026**
 
 ## Goals
@@ -122,24 +124,40 @@ Meta's WhatsApp engineering team published their experience deploying AI code ge
 
 ### 5.3 The Disposable Code Argument
 
-A reasonable counterargument holds that AI-generated code need not resist rot because it can simply be regenerated. This argument has merit for small, stateless components with stable interface contracts — a 50-line utility function with clear inputs and outputs can be safely discarded and regenerated.
+A reasonable counterargument holds that AI-generated code need not resist rot because it can simply be regenerated. If a component decays, discard it and generate a fresh one. This section examines where that argument holds, where it fails, and what it ultimately implies.
 
-The argument breaks down in several ways:
+**Where it works.** For small, stateless components with stable interface contracts — a 50-line utility function with clear inputs and outputs — disposability is practical. Generate, use, discard, regenerate. No architectural investment required.
 
-- **The specification problem.** For non-trivial code, the implementation *is* the specification. Edge cases, workarounds, and integration behavior accumulate in the code itself. Regenerating from the original prompt loses this knowledge.
-- **Internal complexity leaks through interfaces.** Performance characteristics, resource usage patterns, and error handling behavior are not captured by API contracts alone. Replacing an implementation can change observable system behavior even when the interface is preserved.
-- **Component size.** The argument scales poorly. A 50-line function is safely disposable; a 5,000-line service with dozens of integration points is not.
-- **Test completeness.** Tests capture *known* behavior, not the full set of accumulated edge cases. Regenerated code that passes existing tests may still fail on scenarios the original code handled but no test explicitly verified.
+**Where it fails.** As components grow in size and accumulated behavior, four problems emerge:
 
-Moreover, the disposable code approach doesn't eliminate complexity — it shifts it from implementation to specification. To safely regenerate a component, you must fully specify not just its inputs and outputs but its behavioral contract for all edge cases, its performance characteristics, its error semantics, and its side effects. In practice, writing such a complete specification is often harder than writing the implementation. This is why formal specification languages (TLA+, Z, Alloy) exist — and why they are rarely used. For most real-world systems, the code *is* the most complete specification available.
+- **The specification problem.** For non-trivial code, the implementation *is* the specification. Edge cases, workarounds, and integration behavior accumulate in the code over time. Regenerating from the original prompt loses this knowledge.
+- **Leaky abstractions.** Performance characteristics, resource usage, and error handling are not captured by API contracts. Replacing an implementation can change observable system behavior even when the interface is preserved.
+- **Component size.** A 50-line function is safely disposable; a 5,000-line service with dozens of integration points is not. The argument scales inversely with complexity.
+- **Test incompleteness.** Tests capture *known* behavior. The edge cases that accumulated organically in the original code — and that no test explicitly verifies — are lost on regeneration.
 
-Hyrum's Law sharpens the point: "With a sufficient number of users of an API, all observable behaviors of your system will be depended on by somebody." Even with a formally correct interface contract, consumers will depend on incidental implementation behaviors — ordering, timing, error message wording — that no specification captures. Regenerate with a different implementation, and those implicit contracts break.
+**The deeper issue: specification is harder than implementation.** The disposable code approach doesn't eliminate complexity — it shifts it from implementation to specification. To safely regenerate a component, you must fully specify its behavioral contract for all edge cases, its performance characteristics, its error semantics, and its side effects. Writing such a complete specification is often harder than writing the implementation itself. This is why formal specification languages (TLA+, Z, Alloy) exist — and why they are rarely used. For most real-world systems, the code *is* the most complete specification available. Hyrum's Law sharpens the point: even with a formally correct interface contract, consumers will depend on incidental implementation behaviors — ordering, timing, error message wording — that no specification captures.
 
-This does *not* argue against specification-driven development. API-first design, design-by-contract, and TDD all work precisely because they specify *boundaries* — the important contracts and invariants — while deliberately leaving internal behavior unspecified. The disposable code argument asks specifications to do something fundamentally different: capture the *complete* behavior of an implementation so it can be thrown away. Specification-driven development says "specify enough to constrain"; disposable code requires "specify everything to replace." The former is proven practice; the latter is rarely practical.
+**The problem is recursive.** Specifying a component's external interface does not make its internals disposable. Those internals are composed of sub-components that interact through their own unspecified contracts, which in turn contain further internal relationships, all the way down. You cannot escape the specification problem by drawing a boundary around it; the same problem reappears at every level inside that boundary.
 
-The irony is instructive: making code safely disposable requires exactly the architectural discipline — clear interfaces, comprehensive contracts, modular boundaries — that prevents rot in the first place.
+**What about stopping at a practical level?** One might argue for treating everything below some level — functions, classes — as disposable. But the boundary between "safely disposable" and "not safely disposable" depends on how much implicit knowledge has accumulated in a given piece of code, which you cannot assess without understanding the implementation you propose to discard. And even if such a level could be identified, fully specifying all interactions at that level — every function contract, every shared state assumption, every error propagation path — would be impractical for any non-trivial system.
 
-### 5.4 Managed vs. Unmanaged: The Performance Gap
+Making code safely disposable — even partially — requires deliberate architectural work at every level: clear interfaces, comprehensive contracts, modular boundaries. This is exactly the discipline that prevents rot in the first place. Disposable code is not an alternative to architecture; it is a consequence of it.
+
+### 5.4 Intent vs. Behavior: Why Code Becomes the Source of Truth
+
+The analysis above might appear to argue against specification-driven development: if the code is the most complete specification available, why write specs at all? The resolution lies in recognizing that specs and code are sources of truth for *different things*.
+
+Specifications capture **intent** — what the system *should* do. Contracts, interfaces, invariants, test expectations. They are deliberately incomplete: a good API contract specifies what a function promises to callers, not how it fulfills that promise. This incompleteness is a feature, not a flaw. It is what allows implementations to change without breaking consumers.
+
+Code captures **behavior** — what the system *actually* does. This includes everything the specification intended, but also everything it did not: the edge case a developer handled after a production incident two years ago, the timing workaround that prevents a race condition nobody documented, the error recovery path that accumulated through three rounds of bug fixes. Over time, the behavior of a non-trivial component outgrows its specification. The code becomes the authoritative record of what the system does, including things nobody planned or wrote down.
+
+In a healthy system, intent and behavior overlap substantially. In a rotting system, they diverge — the code does things nobody intended, and the specification (if it still exists) describes things the code no longer does. This divergence is itself a form of software rot.
+
+Specification-driven development — API-first design, design-by-contract, TDD — does not claim that specs replace code as the source of truth. It claims that specifying intent *first* produces better code, because it forces thinking about boundaries and contracts before implementation. The code then fills in everything the spec deliberately left out. Good specs make implementations *more* disposable by constraining what a regenerated version must satisfy. But "more disposable" is not "fully disposable." The gap between intent (what was specified) and behavior (what the code actually does) is where regeneration breaks — and where internal design quality still matters.
+
+The disposable code argument fails precisely because it requires specifications to capture *behavior*, not just *intent*. Regenerating a component from its original spec recovers the intended behavior but loses the accumulated behavior that the system has come to depend on. No amount of specification discipline closes this gap entirely, because behavior accumulates through use, not through design.
+
+### 5.5 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Architecturally Managed |
 |---|---|---|
@@ -149,7 +167,7 @@ The irony is instructive: making code safely disposable requires exactly the arc
 | Delivery Stability | AI amplifies weaknesses [18] | AI amplifies strengths [18] |
 | Developer Trust | 46% distrust [17] | Baseline (human-reviewed) |
 
-### 5.5 Synthesis
+### 5.6 Synthesis
 
 **The following is an interpretive conclusion drawn from the evidence presented, not a direct empirical finding.**
 
