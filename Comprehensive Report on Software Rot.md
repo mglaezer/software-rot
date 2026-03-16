@@ -54,7 +54,7 @@ The evidence presented in this report suggests that AI doesn't eliminate rot; it
 
 GitClear's analyses of code quality trends reveal a clear pattern. Their 2024 report analyzed 153 million changed lines of code (2020–2023) [7], and their 2025 follow-up extended this to 211 million lines through 2024 [8]:
 
-- **Code churn** — the proportion of new code reverted within two weeks — was projected to double in 2024 relative to its 2021, pre-AI baseline [7][8].
+- **Code churn** — the proportion of new code reverted within two weeks — was projected to double in 2024 relative to its 2021, pre-AI baseline [7].
 - **Refactoring declined** from 25% of changed lines in 2021 to less than 10% in 2024 [8].
 - **Code duplication** (copy-pasted lines) rose from 8.3% to 12.3% [8].
 
@@ -74,7 +74,7 @@ Google's DORA program — the largest ongoing study of software delivery perform
 
 ### 3.5 AI Cannot Reason Architecturally
 
-An empirical study assessing 144 AI-generated microservices found that current agents are general-purpose code generators **lacking architectural reasoning** for system-level concerns such as quality attributes and API contracts. Structural mismatches between independently generated services — including different package structures, class names, and architectural patterns — were prevalent, though integration tests were more tolerant of these differences (81–98% pass rates) than unit tests [15].
+An empirical study assessing 144 AI-generated microservices found that current agents produce code with inconsistent correctness and require human oversight for system-level concerns such as quality attributes and API contracts. In clean-state generation (from requirements alone), integration tests showed 81–98% pass rates, but incremental generation within existing systems yielded only 50–76% unit test pass rates — suggesting that architectural integration remains a challenge [15].
 
 A separate study introduced the concept of **"Hallucinated Coupling"** — when an LLM correctly implements a class but incorrectly imports dependencies, violating inversion of control and creating structural debt invisible at the function level [16].
 
@@ -84,7 +84,7 @@ These findings suggest that AI-generated code can appear correct in isolation wh
 
 ### 4.1 Refactoring Patterns That Work
 
-The empirical study of 207 open-source Java projects identified four release-wise refactoring patterns [2]. The **"Late Active" pattern** — where teams significantly increase refactoring density as they approach a release — leads to the best code quality outcomes. This pattern prevents complexity from compounding unchecked by systematically addressing architectural drift before each release.
+The empirical study of 207 open-source Java projects identified four release-wise refactoring patterns [2]. The **"Late Active" pattern** — where teams significantly increase refactoring density as they approach a release — leads to the best code quality outcomes. The authors found this pattern is associated with preventing complexity from compounding unchecked by systematically addressing architectural drift before each release.
 
 ### 4.2 Architecture at Scale: Meta's Approach
 
@@ -108,11 +108,11 @@ The **2025 Stack Overflow Developer Survey** — the largest annual survey of pr
 
 - **46% distrust** AI output, versus only 33% who trust it; just **3% "highly trust"** it.
 - Positive favorability toward AI tools **dropped from over 70% to 60%** year-over-year.
-- **81% of professional developers** currently use AI tools despite this distrust [24].
+- Approximately **81% of professional developers** currently use AI tools despite this distrust [24].
 
 ### 5.2 Practitioner Reports on Technical Debt
 
-A **Carnegie Mellon study** (806 repositories) found that code complexity increased by **26–42%** (depending on estimator; a third estimator found no significant change) and static analysis warnings by **30%** in AI-assisted repositories after Cursor adoption. The study also found that velocity gains were transient, disappearing after approximately two months [26].
+A **Carnegie Mellon study** (806 repositories) found that code complexity increased by **42%** (primary estimator; alternative estimators reported in robustness checks) and static analysis warnings by **30%** in AI-assisted repositories after Cursor adoption. The study also found that velocity gains were transient, with the only significant gains occurring in the first two months post-adoption [26].
 
 ### 5.3 Sentiment Summary
 
@@ -120,14 +120,14 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 |---|---|---|---|
 | Stack Overflow 2025 [24] | 49,000 devs | Distrust AI output | 46% |
 | Stack Overflow 2025 [24] | 49,000 devs | Favorable toward AI tools | 60% (↓ from 70%+) |
-| CMU 2026 [26] | 806 repos | Code complexity increase post-AI | +26–42% |
+| CMU 2026 [26] | 806 repos | Code complexity increase post-AI | +42% |
 
 ## 6 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Managed Architecture |
 |---|---|---|
-| Initial Build Speed | Up to 55% Faster [22] | Baseline Speed |
-| Code Complexity | +26–42% increase [26] | Baseline |
+| Initial Build Speed | 55% Faster [22] | Baseline Speed |
+| Code Complexity | +42% increase [26] | Baseline |
 | Refactoring Rate | Declining (<10%) [8] | Active (Late Active Pattern) [2] |
 | Delivery Stability | AI amplifies existing weaknesses [13] | AI amplifies existing strengths [13] |
 | Developer Trust | 46% distrust [24] | Baseline (human-reviewed) |
@@ -135,7 +135,7 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 ## 7 Summary of Findings
 
 - **Software rot is real and costly.** 45% of the world's code is fragile [3], and tech debt accounts for 20–40% of technology estate value [4]. Lehman's Laws confirm that complexity increases continuously in evolving systems [1].
-- **AI accelerates rot.** Code churn is projected to double [7][8], refactoring has declined from 25% to less than 10% of changed lines [8], and code complexity increases 26–42% in AI-assisted repositories [26].
+- **AI accelerates rot.** Code churn is projected to double [7], refactoring has declined from 25% to less than 10% of changed lines [8], and code complexity increases 42% in AI-assisted repositories [26].
 - **Current AI tools lack architectural reasoning.** They produce "Hallucinated Coupling" that violates design principles invisibly [15][16].
 - **Architecture amplifies AI's benefits.** DORA research shows AI amplifies existing practices, both good and bad [13]. Meta's enterprise deployment found architectural guardrails essential at scale [17].
 - **Developers see it too.** 46% distrust AI output vs. 33% who trust it, and favorability toward AI tools dropped from 70%+ to 60% year-over-year [24].
@@ -154,11 +154,11 @@ https://dl.acm.org/doi/10.1145/3715734
 [15] *Can AI Agents Generate Microservices? How Far Are We?* Assessment of 144 generated microservices showing agents lack architectural reasoning. Accepted at IEEE ICSA 2026.
 https://arxiv.org/abs/2603.09004
 
-[26] **Carnegie Mellon University (2026):** *Speed at the Cost of Quality: How Cursor AI Increases Short-Term Velocity and Long-Term Complexity in Open-Source Projects.* Study of 806 repositories finding +26–42% code complexity (depending on estimator) and +30% static analysis warnings in AI-assisted repos. Published at MSR '26.
+[26] **Carnegie Mellon University (2026):** *Speed at the Cost of Quality: How Cursor AI Increases Short-Term Velocity and Long-Term Complexity in Open-Source Projects.* Study of 806 repositories finding +42% code complexity (primary estimator) and +30% static analysis warnings in AI-assisted repos. Published at MSR '26.
 https://arxiv.org/abs/2511.04427
 
 [28] **David Parnas (1994):** *Software Aging.* Foundational paper on why software degrades over time as its environment evolves while its internal structure remains static. Published at ICSE '94.
-https://dl.acm.org/doi/10.5555/257734.257788
+https://doi.org/10.1109/icse.1994.296790
 
 ### Preprints (not yet peer-reviewed)
 
@@ -168,15 +168,15 @@ https://arxiv.org/html/2601.06266v1
 [16] *Quantitative Analysis of Technical Debt and Pattern Violation in LLM Architectures.* Introduces "Hallucinated Coupling" metric for AI-generated code. arXiv, December 2025.
 https://arxiv.org/html/2512.04273
 
-[17] **Meta (2026):** *WhatsCode: Large-Scale GenAI Deployment for Developer Efficiency.* 25-month deployment producing 3,000+ accepted code changes with architectural guardrails. Submitted to ICSE-SEIP 2026.
+[17] **Meta (2026):** *WhatsCode: Large-Scale GenAI Deployment for Developer Efficiency at WhatsApp.* 25-month deployment producing 3,000+ accepted code changes with guardrails for architectural coherence. Accepted at ICSE-SEIP 2026.
 https://arxiv.org/html/2512.05314
 
 ### Established Research Programs
 
-[12] **METR (2025):** *Measuring the Impact of AI on Experienced Open-Source Developer Productivity.* Randomized controlled trial finding experienced developers 19% slower with AI tools in large open-source repositories.
+[12] **METR (2025):** *Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity.* Randomized controlled trial finding experienced developers 19% slower with AI tools in large open-source repositories.
 https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/
 
-[13] **Google DORA (2025):** *Accelerate State of DevOps.* AI acts as an amplifier of existing organizational practices.
+[13] **Google DORA (2025):** *State of AI-assisted Software Development 2025.* AI acts as an amplifier of existing organizational practices.
 https://dora.dev/research/2025/dora-report/
 
 ### Industry Surveys & Reports
@@ -201,7 +201,7 @@ https://www.gitclear.com/coding_on_copilot_data_shows_ais_downward_pressure_on_c
 [8] **GitClear (2025):** *AI Copilot Code Quality: 2025 Data.* Analysis of 211 million changed lines (2020–2024) showing refactoring decline from 25% to <10% and code duplication increase from 8.3% to 12.3%. Not peer-reviewed.
 https://www.gitclear.com/ai_assistant_code_quality_2025_research
 
-[22] **GitHub (2022):** *Research: Quantifying GitHub Copilot's Impact on Developer Productivity.* Vendor-conducted study finding developers completed tasks up to 55% faster with Copilot (n=95). Not peer-reviewed.
+[22] **GitHub (2022):** *Research: Quantifying GitHub Copilot's Impact on Developer Productivity.* Vendor-conducted study finding developers completed tasks 55% faster with Copilot (n=95). Not peer-reviewed.
 https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness/
 
 ### Practitioner Commentary
