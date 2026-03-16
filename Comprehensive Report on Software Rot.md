@@ -76,7 +76,7 @@ Google's DORA program — the largest ongoing study of software delivery perform
 
 An empirical study assessing 144 AI-generated microservices found that current agents produce code with inconsistent correctness and require human oversight for system-level concerns such as quality attributes and API contracts. In clean-state generation (from requirements alone), integration tests showed 81–98% pass rates, but incremental generation within existing systems yielded only 50–76% unit test pass rates — suggesting that architectural integration remains a challenge [15].
 
-A separate study introduced the concept of **"Hallucinated Coupling"** — when an LLM correctly implements a class but incorrectly imports dependencies, violating inversion of control and creating structural debt invisible at the function level [16].
+A separate study introduced the concept of **"Hallucinated Coupling"** — when an LLM correctly implements a class but incorrectly imports dependencies, violating inversion of control [16].
 
 These findings suggest that AI-generated code can appear correct in isolation while introducing structural debt at the system level.
 
@@ -84,7 +84,7 @@ These findings suggest that AI-generated code can appear correct in isolation wh
 
 ### 4.1 Refactoring Patterns That Work
 
-The empirical study of 207 open-source Java projects identified four release-wise refactoring patterns [2]. The **"Late Active" pattern** — where teams significantly increase refactoring density as they approach a release — leads to the best code quality outcomes. The authors found this pattern is associated with preventing complexity from compounding unchecked by systematically addressing architectural drift before each release.
+The empirical study of 207 open-source Java projects identified four release-wise refactoring patterns [2]. The **"Late Active" pattern** — where teams gradually increase refactoring activity as they approach a release — leads to the best code quality outcomes [2]. This suggests that systematically addressing complexity before each release prevents architectural drift from compounding unchecked.
 
 ### 4.2 Architecture at Scale: Meta's Approach
 
@@ -112,7 +112,7 @@ The **2025 Stack Overflow Developer Survey** — the largest annual survey of pr
 
 ### 5.2 Practitioner Reports on Technical Debt
 
-A **Carnegie Mellon study** (806 repositories) found that code complexity increased by **42%** (primary estimator; alternative estimators reported in robustness checks) and static analysis warnings by **30%** in AI-assisted repositories after Cursor adoption. The study also found that velocity gains were transient, with the only significant gains occurring in the first two months post-adoption [26].
+A **Carnegie Mellon study** (806 repositories) found that code complexity increased by **41.6%** (primary estimator; alternative estimators reported in robustness checks) and static analysis warnings by **30%** in AI-assisted repositories after Cursor adoption. The study also found that velocity gains were transient, with the only significant gains occurring in the first two months post-adoption [26].
 
 ### 5.3 Sentiment Summary
 
@@ -120,14 +120,14 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 |---|---|---|---|
 | Stack Overflow 2025 [24] | 49,000 devs | Distrust AI output | 46% |
 | Stack Overflow 2025 [24] | 49,000 devs | Favorable toward AI tools | 60% (↓ from 70%+) |
-| CMU 2026 [26] | 806 repos | Code complexity increase post-AI | +42% |
+| CMU 2026 [26] | 806 repos | Code complexity increase post-AI | +41.6% |
 
 ## 6 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Managed Architecture |
 |---|---|---|
 | Initial Build Speed | 55% Faster [22] | Baseline Speed |
-| Code Complexity | +42% increase [26] | Baseline |
+| Code Complexity | +41.6% increase [26] | Baseline |
 | Refactoring Rate | Declining (<10%) [8] | Active (Late Active Pattern) [2] |
 | Delivery Stability | AI amplifies existing weaknesses [13] | AI amplifies existing strengths [13] |
 | Developer Trust | 46% distrust [24] | Baseline (human-reviewed) |
@@ -135,8 +135,8 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 ## 7 Summary of Findings
 
 - **Software rot is real and costly.** 45% of the world's code is fragile [3], and tech debt accounts for 20–40% of technology estate value [4]. Lehman's Laws confirm that complexity increases continuously in evolving systems [1].
-- **AI accelerates rot.** Code churn is projected to double [7], refactoring has declined from 25% to less than 10% of changed lines [8], and code complexity increases 42% in AI-assisted repositories [26].
-- **Current AI tools lack architectural reasoning.** They produce "Hallucinated Coupling" that violates design principles invisibly [15][16].
+- **AI accelerates rot.** Code churn is projected to double [7], refactoring has declined from 25% to less than 10% of changed lines [8], and code complexity increases 41.6% in AI-assisted repositories [26].
+- **Current AI tools struggle with architectural reasoning.** They require human oversight for system-level concerns [15] and produce "Hallucinated Coupling" that violates design principles [16].
 - **Architecture amplifies AI's benefits.** DORA research shows AI amplifies existing practices, both good and bad [13]. Meta's enterprise deployment found architectural guardrails essential at scale [17].
 - **Developers see it too.** 46% distrust AI output vs. 33% who trust it, and favorability toward AI tools dropped from 70%+ to 60% year-over-year [24].
 - **Refactoring discipline is the key.** The Late Active refactoring pattern is the most effective way to manage complexity [2], and leading practitioners emphasize that TDD and design discipline remain critical when working with AI [18][19].
@@ -145,16 +145,16 @@ A **Carnegie Mellon study** (806 repositories) found that code complexity increa
 
 ### Peer-Reviewed Research
 
-[1] **Lehman's Laws Validation:** *An Empirical Study of Lehman's Law on Software Quality Evolution.* Validates Lehman's laws of increasing size and complexity using Apache Tomcat and Ant projects. Published in *International Journal of Software and Informatics*, 2013.
+[1] **Lehman's Laws Validation:** *An Empirical Study of Lehman's Law on Software Quality Evolution.* Validates Lehman's laws of increasing size and complexity using Apache Tomcat and Ant projects. Published in *International Journal of Software Informatics*, 2013.
 https://www.researchgate.net/publication/259979752_An_Empirical_Study_of_Lehmans_Law_on_Software_Quality_Evolution
 
 [2] **ACM (2025):** *An Empirical Study on Release-Wise Refactoring Patterns.* Study of 207 open-source Java projects identifying four release-wise refactoring patterns. Published in *Proceedings of the ACM on Software Engineering* (FSE 2025).
 https://dl.acm.org/doi/10.1145/3715734
 
-[15] *Can AI Agents Generate Microservices? How Far Are We?* Assessment of 144 generated microservices showing agents lack architectural reasoning. Accepted at IEEE ICSA 2026.
+[15] *Can AI Agents Generate Microservices? How Far Are We?* Assessment of 144 generated microservices showing agents require human oversight for system-level concerns. Accepted at IEEE ICSA 2026.
 https://arxiv.org/abs/2603.09004
 
-[26] **Carnegie Mellon University (2026):** *Speed at the Cost of Quality: How Cursor AI Increases Short-Term Velocity and Long-Term Complexity in Open-Source Projects.* Study of 806 repositories finding +42% code complexity (primary estimator) and +30% static analysis warnings in AI-assisted repos. Published at MSR '26.
+[26] **Carnegie Mellon University (2026):** *Speed at the Cost of Quality: How Cursor AI Increases Short-Term Velocity and Long-Term Complexity in Open-Source Projects.* Study of 806 repositories finding +41.6% code complexity (primary estimator) and +30% static analysis warnings in AI-assisted repos. Published at MSR '26.
 https://arxiv.org/abs/2511.04427
 
 [28] **David Parnas (1994):** *Software Aging.* Foundational paper on why software degrades over time as its environment evolves while its internal structure remains static. Published at ICSE '94.
