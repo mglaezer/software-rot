@@ -97,6 +97,16 @@ Three approaches are emerging:
 
 ---
 
+## The Broader Pattern: Compound Engineering
+
+A practitioner methodology called **compound engineering** has gained traction in the AI development community. Its core idea is simple: each development cycle should make the next one better. After completing a task, you capture what you learned into structured files that guide future work.
+
+As originally practiced, compound engineering captures operational knowledge — bug patterns, coding conventions, what to avoid. This makes each task more efficient, but doesn't address architecture.
+
+The pattern becomes powerful when applied at the architectural level. **Spec-anchored development is compound engineering for architecture.** The same cycle applies: plan the structure, generate code within those constraints, assess the result, then capture any architectural knowledge discovered during implementation back into the spec. Instead of compounding task-level heuristics, you compound architectural understanding. Each cycle strengthens the system's structural integrity.
+
+---
+
 ## This Report Recommends: Spec-Anchored Development
 
 Of these three, **spec-anchored** is the only approach that directly addresses the core problem — the growing gap between what the spec says and what the code actually does.
@@ -122,6 +132,6 @@ Whether AI-assisted spec maintenance will actually work at scale is an open ques
 - AI amplifies whatever practices you already have — good or bad.
 - You can't just "regenerate" complex code. The code knows things the spec doesn't.
 - Every system has two sources of truth: the spec (architecture) and the code (implementation). Keeping them aligned is the challenge.
-- Spec-anchored development — maintaining a living specification alongside the code — is the most promising response, though it remains unproven at scale.
+- Spec-anchored development — maintaining a living specification alongside the code — is the most promising response, though it remains unproven at scale. It applies the compound engineering pattern at the architectural level: each cycle strengthens structural integrity.
 
 **Architecture was always the antidote to software rot. In the age of AI, it's the prerequisite.**
