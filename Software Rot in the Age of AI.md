@@ -140,7 +140,7 @@ A reasonable counterargument holds that AI-generated code need not resist rot be
 - **Component size.** A 50-line function is safely disposable; a 5,000-line service with dozens of integration points is not. The argument scales inversely with complexity.
 - **Test incompleteness.** Tests capture *known* behavior. The edge cases that accumulated organically in the original code — and that no test explicitly verifies — are lost on regeneration. The microservices study [14] provides empirical support: AI-generated code achieved 81–98% integration test pass rates in clean-state generation but only 50–76% in existing systems, suggesting that accumulated system knowledge escapes test coverage.
 
-**The deeper issue: complete specification is impractical.** The disposable code approach doesn't eliminate complexity — it shifts it from implementation to specification. To safely regenerate a component, you must fully specify its behavioral contract for all edge cases, its performance characteristics, its error semantics, and its side effects. Writing such a complete specification is impractical for non-trivial systems. This is why formal specification languages (TLA+, Z, Alloy) exist — and why they are rarely used. For most real-world systems, the code *is* the most complete specification available. Hyrum's Law [23] sharpens the point: even with a formally correct interface contract, consumers will depend on incidental implementation behaviors — ordering, timing, error message wording — that no specification captures.
+**The deeper issue: complete specification is impractical.** The disposable code approach doesn't eliminate complexity — it shifts it from implementation to specification. To safely regenerate a component, you must fully specify its behavioral contract for all edge cases, its performance characteristics, its error semantics, and its side effects. Writing such a complete specification is impractical for non-trivial systems. This is why formal specification languages (TLA+, Z, Alloy) exist — and why they are rarely used. For most real-world systems, the code *is* the most complete specification available. Hyrum's Law [27] sharpens the point: even with a formally correct interface contract, consumers will depend on incidental implementation behaviors — ordering, timing, error message wording — that no specification captures.
 
 **The problem is recursive.** For components with accumulated state and side effects, specifying a component's external interface does not make its internals disposable. Those internals are composed of sub-components that interact through their own unspecified contracts, which in turn contain further internal relationships, all the way down. You cannot escape the specification problem by drawing a boundary around it; the same problem reappears at every level inside that boundary.
 
@@ -170,7 +170,19 @@ Specification-driven development works because it forces architectural thinking 
 
 The disposable code argument fails precisely because it conflates these two sources of truth. It assumes that regenerating from the spec (architectural knowledge) will recover everything in the code (implementation knowledge). It will not. Regeneration recovers the designed structure but loses the accumulated implementation knowledge that the system has come to depend on. No amount of specification discipline closes this gap entirely, because implementation knowledge accumulates through use, not through design — a pattern observable across the evidence in this report: software ages as its environment evolves while its structure remains static [1], evolving systems exhibit continuing growth in size and complexity [2], and the first technical debt introduced into a file is removed only 4.2% of the time [13].
 
-### 5.5 Spec-Driven Development: The Industry Response
+### 5.5 Compound Engineering: The Broader Pattern
+
+A practitioner methodology called **compound engineering** (Shipper & Klaassen, 2025) has gained significant traction in the AI-assisted development community [28]. Its core principle is that each development cycle should make the next one better. The methodology structures work into four steps: plan (agents research the codebase and produce a detailed implementation plan), work (agents execute the plan), assess (multi-agent review from multiple perspectives), and compound (learnings from the session are captured into structured files that future agents consult). The distinguishing step is the last one — the systematic capture of knowledge that creates a compounding effect over time.
+
+Will Larson characterized compound engineering as comprising "two extremely well-known patterns, one moderately well-known pattern, and one pattern that many practitioners have intuited but have not found a consistent mechanism to implement" [29]. He found it "not shocking" but "extremely effective" at converting intuitive best practices into something "specific, concrete, and largely automatic."
+
+As originally practiced, compound engineering captures **operational knowledge** — bug patterns, coding conventions, failure modes, problem-solving heuristics. This makes each *task* more efficient but does not maintain a structural model of the system. A team could practice compound engineering perfectly and still have its architecture rot — it would simply rot more efficiently.
+
+The pattern becomes architecturally significant when applied at a different level of abstraction. **Spec-anchored development is compound engineering applied to architecture.** The same four-step cycle operates: plan (write the spec with structure, contracts, and boundaries), work (generate code within those constraints), assess (verify code against spec), compound (capture architectural knowledge discovered during implementation back into the spec). The difference is what gets captured: not operational heuristics but design decisions, component relationships, and structural constraints. The compounding effect is architectural — each cycle strengthens the system's structural integrity rather than just improving task execution.
+
+This framing positions spec-anchored development not as a novel concept but as the application of a recognized pattern at the level where software rot occurs.
+
+### 5.6 Spec-Driven Development: The Industry Response
 
 The problems documented in Section 3 — AI generating code without architectural awareness — have not gone unnoticed. A significant industry movement toward **spec-driven development (SDD)** has emerged [25][26], with major open-source frameworks (GitHub's spec-kit [23], OpenSpec, BMAD-METHOD) attracting tens of thousands of GitHub stars, and companies like AWS (Kiro) and Tessl building commercial products around the concept.
 
@@ -198,7 +210,7 @@ That only 12% of teams currently sustain this practice admits two honest interpr
 
 This recommendation follows from the analytical framework developed in Sections 5.3 and 5.4. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. Empirical comparison is a critical gap in the current evidence base.
 
-### 5.6 Managed vs. Unmanaged: The Performance Gap
+### 5.7 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Architecturally Managed |
 |---|---|---|
@@ -208,7 +220,7 @@ This recommendation follows from the analytical framework developed in Sections 
 | Delivery Stability | AI amplifies weaknesses [18] | AI amplifies strengths [18] |
 | Developer Trust | 46% distrust [17] | Baseline (human-reviewed) |
 
-### 5.7 Synthesis
+### 5.8 Synthesis
 
 **The following is an interpretive conclusion drawn from the evidence presented, not a direct empirical finding.**
 
@@ -327,3 +339,9 @@ https://www.thoughtworks.com/en-us/insights/blog/agile-engineering-practices/spe
 
 [27] **Hyrum Wright:** *Hyrum's Law.* "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of your system will be depended on by somebody."
 https://www.hyrumslaw.com/
+
+[28] **Dan Shipper & Kieran Klaassen / Every (2025):** *Compound Engineering: How Every Codes With Agents.* Practitioner methodology where each development cycle compounds knowledge for the next. Four-step workflow: plan, work, assess, compound.
+https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agents
+
+[29] **Will Larson / Irrational Exuberance (2026):** *Learning from Every's Compound Engineering.* Independent analysis characterizing compound engineering as effective systematization of intuitive practices.
+https://lethain.com/everyinc-compound-engineering/
