@@ -103,7 +103,7 @@ A practitioner methodology called **compound engineering** has gained traction i
 
 As originally practiced, compound engineering captures operational knowledge — bug patterns, coding conventions, what to avoid. This makes each task more efficient, but doesn't address architecture.
 
-The pattern becomes powerful when applied at the architectural level. **Spec-anchored development is compound engineering for architecture.** The same cycle applies: plan the structure, generate code within those constraints, assess the result, then capture any architectural knowledge discovered during implementation back into the spec. Instead of compounding task-level heuristics, you compound architectural understanding. Each cycle strengthens the system's structural integrity.
+The pattern becomes powerful when applied at the architectural level. **Spec-anchored development is compound engineering for design and architecture.** The same cycle applies: plan the structure, generate code within those constraints, assess the result, then capture any architectural knowledge discovered during implementation back into the spec. Instead of compounding task-level heuristics, you compound architectural understanding. Each cycle strengthens the system's structural integrity.
 
 ---
 
