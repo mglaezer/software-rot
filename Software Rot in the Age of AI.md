@@ -8,7 +8,13 @@
 
 ## The Problem
 
-45% of the world's code already suffers from structural weakness [3]. AI-assisted development was expected to improve this. The early evidence suggests it is making it worse. A study of 806 repositories found that code complexity increased by 41.6% after adopting AI coding tools, compared to the same repositories before adoption [12]. Over the same period that AI tools reached mainstream use, refactoring — the primary defense against structural decay — declined from 25% to less than 10% of changed lines across the industry [11], and higher AI tool adoption correlates with a 7.2% decrease in delivery stability [31]. 81% of professional developers now use these tools [17]. The question is no longer whether AI changes how code is written, but whether anyone is ensuring it doesn't rot faster.
+45% of the world's code already suffers from structural weakness [3]. AI-assisted development was expected to improve this. The early evidence suggests it is making it worse:
+
+- **Code complexity increased 41.6%** in repositories after adopting AI tools, compared to the same repositories before adoption [12].
+- **Refactoring declined from 25% to less than 10%** of changed lines over the period AI tools reached mainstream use [11].
+- **Delivery stability drops 7.2%** for every 25% increase in AI tool adoption [31].
+
+81% of professional developers now use these tools [17]. The question is no longer whether AI changes how code is written, but whether anyone is ensuring it doesn't rot faster.
 
 ---
 
