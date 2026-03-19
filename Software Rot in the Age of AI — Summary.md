@@ -8,23 +8,26 @@
 
 ## The Problem
 
-Software decays over time. Even if nobody touches the code, the world around it changes — new requirements, new integrations, new security threats — and the software falls behind. This is called **software rot**.
+Poor software quality costs the US economy $2.4 trillion per year. Companies spend 20–40% of their technology budgets just managing old, decaying systems. It would take 25 million developers working full-time for 9 years to pay off the technical debt that already exists.
 
-It is expensive. Nearly half the world's code is fragile. The US alone loses an estimated $2.4 trillion per year to poor software quality. Companies spend 20–40% of their technology budgets just managing old, decaying systems.
+This decay is called **software rot** — software degrades over time as the world around it changes, even if nobody touches the code. New requirements, new integrations, new security threats pile up, and the software falls behind.
+
+AI-assisted development was expected to reduce this burden. The early evidence suggests it's making it worse.
 
 ---
 
 ## What Prevents Rot
 
-Over fifty years of research has established one consistent answer: **good architecture**.
+Over fifty years of research gives one consistent answer: **good architecture**.
 
-Systems built with clear boundaries between components, well-defined contracts, and thoughtful structure are easier to change, have fewer bugs, and perform better. The numbers are striking:
+Systems built with clear boundaries, well-defined contracts, and thoughtful structure are easier to change, have fewer bugs, and perform better. The numbers are striking:
 
 - Poorly structured code has up to **31 times more bugs** than well-structured code.
 - Teams with good architecture deploy **208 times more often** and recover from failures **2,604 times faster**.
+- Improving code health from average to elite **accelerates development by 43%** and **reduces defects up to 15x**.
 - Teams that regularly refactor — clean up and restructure their code — produce the best quality outcomes.
 
-None of this is controversial. Architecture prevents rot. The evidence is deep and consistent.
+Architecture prevents rot. The evidence is deep and consistent.
 
 ---
 
@@ -32,37 +35,58 @@ None of this is controversial. Architecture prevents rot. The evidence is deep a
 
 AI coding tools let developers write code faster. But early evidence suggests they also accelerate rot:
 
-- **More code, less cleanup.** Code duplication is rising. Refactoring — the practice of restructuring existing code — has dropped sharply.
-- **More complexity.** One study of 806 projects found that AI-assisted code was **42% more complex** and had 30% more quality warnings.
-- **Speed gains fade.** The initial productivity boost from AI tools disappears after about two months, as the accumulated mess slows teams down.
-- **AI struggles with the big picture.** AI can write individual functions well, but it doesn't understand how pieces fit together. It creates code that looks correct in isolation but breaks the system's structure.
+- **More code, less cleanup.** Code duplication is rising. Refactoring — restructuring existing code — has dropped from 25% to less than 10% of code changes.
+- **More complexity.** A study of 806 projects found that AI-assisted code was **42% more complex** and had 30% more quality warnings. Speed gains disappeared after just two months.
+- **AI struggles with the big picture.** AI can write individual functions well, but doesn't understand how pieces fit together. It creates code that looks correct in isolation but breaks the system's structure.
+- **The review bottleneck.** Teams using AI heavily merge 98% more code, but code review time increases by 91% and bugs increase by 9% per developer. Despite feeling faster individually, company-wide delivery metrics stay flat.
+- **AI makes bad code worse.** A controlled experiment found that AI increases defect risk by at least 30% when applied to poorly structured code. Good code, on the other hand, produces good AI output.
 
-This evidence is early — some studies are from vendors, some are preprints — so we should treat it as a strong signal rather than settled science.
-
-Meanwhile, developers are noticing. In a survey of 49,000 developers, 46% said they distrust AI-generated code — yet 81% keep using it.
+81% of professional developers now use AI tools. In a survey of 49,000, 46% said they distrust AI-generated code — yet they keep using it.
 
 ---
 
-## The Key Insight: AI Amplifies What You Already Have
+## Two Premises, One Conclusion
 
-Google's research program on software delivery found that AI acts as an **amplifier**. It makes good teams better and struggling teams worse.
+The evidence establishes two things:
 
-If your architecture is strong, AI generates code within good boundaries and your structure contains the mess. If your architecture is weak, AI generates more mess, faster, with nobody steering.
+**Premise 1: Architecture quality determines AI outcomes.** Google's research found that AI acts as an amplifier — it makes good teams better and struggling teams worse. AI increases defect risk on unhealthy code but works well on healthy code. Meta's WhatsApp team found that architectural guardrails were essential to making AI-generated code production-worthy.
 
-**Architecture was always important. With AI, it's the deciding factor.**
+**Premise 2: AI without constraints degrades quality.** Every independent study points the same way — complexity up, refactoring down, duplication up, review time up, delivery stability down.
+
+**What follows:** If architecture determines outcomes, and AI without constraints degrades quality, then AI needs externalized architectural knowledge that constrains code *before* it's written.
+
+This isn't a recommendation — it's a logical consequence of the evidence. The question is: what form should those constraints take?
+
+---
+
+## Why Specifications
+
+There are five ways to constrain AI-generated code:
+
+1. **Code quality metrics** (like SonarQube) catch problems *after* code is generated. They can reject bad code, but they can't tell the AI how to structure code in the first place.
+2. **Architectural rules** (like ArchUnit) encode constraints as automated checks — "no dependency from A to B." But they capture rules, not the *reasoning* behind those rules.
+3. **Tests** verify what code does. They can't guide how code should be structured before it exists.
+4. **Human review** provides real architectural guidance — but it doesn't scale. AI adoption already increases review time by 91%.
+5. **AI guardrails** — like Meta's WhatsApp deployment with cross-session memory and explicit rules — constrain the generator before code is written. These are, in every functional sense, *specifications*.
+
+The pattern: metrics, rules, and tests are reactive — they evaluate code after it's generated. Human review is proactive but doesn't scale. The only mechanism that is both proactive *and* scalable is externalized architectural knowledge — design decisions, structural constraints, and the rationale behind them, captured in a form that both humans and AI can consult.
+
+That's what a specification is.
+
+Specifications aren't sufficient on their own — you still need tests, metrics, and review as verification layers. But they are *necessary*: no combination of reactive mechanisms can prevent the structural decay the evidence documents, because reactive mechanisms can only reject bad output, not guide good generation.
 
 ---
 
 ## "Just Regenerate It" — Why That Doesn't Work
 
-Some argue that since AI can generate code so quickly, we don't need to care about code quality. If something rots, just throw it away and regenerate it.
+Some argue that since AI can generate code so quickly, we don't need to care about quality. If something rots, just throw it away and regenerate it.
 
-This works for simple things — a small utility function, a data transformation, a basic API endpoint. For a large fraction of everyday code, disposability is genuinely practical.
+This works for simple things — a utility function, a data transformation, a basic API endpoint. For a large fraction of everyday code, disposability is genuinely practical.
 
 But for complex, long-lived systems it breaks down:
 
 - **The code knows things the spec doesn't.** Over time, code accumulates knowledge — edge cases handled, race conditions worked around, quirks accommodated. Regenerating from the original description loses all of this.
-- **You can't fully specify complex behavior.** Writing a complete specification of everything a component does is often harder than writing the component itself. In practice, the code *is* the most complete description of what the system does.
+- **You can't fully specify complex behavior.** Writing a complete specification of everything a component does is often harder than writing the component itself. The code *is* the most complete description of what the system does.
 - **The problem repeats at every level.** Even if you perfectly specify a component's external interface, its internals contain sub-components with their own unspecified relationships, all the way down.
 
 The irony: making code safely disposable requires exactly the architectural discipline — clear interfaces, comprehensive contracts, modular boundaries — that prevents rot in the first place.
@@ -81,13 +105,11 @@ These aren't competing — they're complementary. The spec answers "how is this 
 
 Problems arise when they diverge. In a healthy system, they're aligned. In a rotting system, the code does things the architecture never intended, and the spec (if it still exists) describes a design the code no longer follows. **This divergence is itself a form of rot.**
 
-Tests play a complementary role: they verify that code behaves correctly, but they don't capture *why* the system is structured a certain way or guide how new code should be organized. Specs guide generation; tests validate it.
-
 ---
 
 ## The Industry Response: Spec-Driven Development
 
-The software industry has noticed these problems and is responding with **spec-driven development** — writing specifications before generating code with AI. Major frameworks (GitHub's spec-kit, OpenSpec) have attracted tens of thousands of GitHub stars.
+The software industry has noticed and is responding with **spec-driven development** — writing specifications before generating code with AI. Major frameworks (GitHub's spec-kit, OpenSpec) have attracted tens of thousands of GitHub stars.
 
 Three approaches are emerging:
 
@@ -95,21 +117,13 @@ Three approaches are emerging:
 2. **Spec-anchored.** The spec lives alongside the code and both evolve together. When building reveals new architectural insights, they flow back into the spec. This is the hardest to sustain but the most valuable.
 3. **Spec-as-source.** Humans maintain only the spec. Code is generated and treated as fully disposable. This is the most ambitious vision, but runs into the limitations described above.
 
----
-
-## The Broader Pattern: Compound Engineering
-
-A practitioner methodology called **compound engineering** has gained traction in the AI development community. Its core idea is simple: each development cycle should make the next one better. After completing a task, you capture what you learned into structured files that guide future work.
-
-As originally practiced, compound engineering captures operational knowledge — bug patterns, coding conventions, what to avoid. This makes each task more efficient, but doesn't address architecture.
-
-The pattern becomes powerful when applied at the architectural level. **Spec-anchored development is compound engineering for design and architecture.** The same cycle applies: plan the structure, generate code within those constraints, assess the result, then capture any architectural knowledge discovered during implementation back into the spec. Instead of compounding task-level heuristics, you compound architectural understanding. Each cycle strengthens the system's structural integrity.
+A related methodology called **compound engineering** has gained traction: each development cycle captures what was learned into structured files that guide future work. Spec-anchored development applies this pattern at the architectural level — instead of compounding task-level heuristics, you compound architectural understanding. Each cycle strengthens the system's structural integrity.
 
 ---
 
 ## This Report Recommends: Spec-Anchored Development
 
-Of these three, **spec-anchored** is the only approach that directly addresses the core problem — the growing gap between what the spec says and what the code actually does.
+Of the three approaches, **spec-anchored** is the only one that directly addresses the core problem — the growing gap between what the spec says and what the code actually does.
 
 Spec-first is valuable but incomplete: it captures your thinking upfront, then lets the spec go stale. Spec-as-source is impractical for complex systems. Spec-anchored keeps both sources of truth alive and aligned.
 
@@ -126,12 +140,12 @@ Whether AI-assisted spec maintenance will actually work at scale is an open ques
 
 ## The Bottom Line
 
-- Software rots. This is established fact.
-- Good architecture prevents rot. Decades of research confirm this.
-- AI generates more code with less architectural awareness, which early evidence suggests accelerates rot.
-- AI amplifies whatever practices you already have — good or bad.
+- Software rots. This is established fact — and it costs trillions.
+- Good architecture prevents rot. Decades of research confirm this, with the latest showing 43% faster development and 15x fewer defects for well-structured code.
+- AI generates more code with less architectural awareness, accelerating rot. The evidence is consistent across every independent source.
+- AI amplifies whatever practices you already have — good or bad. It increases defect risk on unhealthy code and works well on healthy code.
+- Two premises lead to one conclusion: if architecture determines AI outcomes, and AI without constraints degrades quality, then AI needs externalized architectural knowledge — specifications — before code is written. No alternative mechanism is both proactive and scalable.
 - You can't just "regenerate" complex code. The code knows things the spec doesn't.
-- Every system has two sources of truth: the spec (architecture) and the code (implementation). Keeping them aligned is the challenge.
-- Spec-anchored development — maintaining a living specification alongside the code — is the most promising response, though it remains unproven at scale. It applies the compound engineering pattern at the architectural level: each cycle strengthens structural integrity.
+- Spec-anchored development — maintaining a living specification alongside the code — is the most promising response, though it remains unproven at scale.
 
 **Architecture was always the antidote to software rot. In the age of AI, it's the prerequisite.**
