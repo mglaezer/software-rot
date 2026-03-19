@@ -21,6 +21,8 @@ This report examines software rot — the progressive decay of software systems 
 3. **Architecture matters more than ever.** If AI amplifies existing practices (as DORA's research indicates), then architectural quality determines whether AI accelerates delivery or accelerates decay.
 4. **Specification preserves architectural knowledge.** Every non-trivial system has two sources of truth — specifications capture architectural knowledge (structure and design decisions), code captures implementation knowledge (what the system actually does). Keeping both aligned through spec-anchored development is the most promising response to AI-accelerated rot, though empirical validation of this approach remains limited.
 
+The first three arguments are empirically grounded (Sections 2–5). The fourth follows by elimination: if architecture determines whether AI helps or hurts, and AI without architectural constraints degrades quality, then AI needs externalized architectural knowledge that constrains code before it is written. Section 7 examines every alternative constraint mechanism and finds that each either is a specification by another name or is reactive rather than generative.
+
 **Source selection note:** This report excludes vendor blog posts without disclosed methodology, marketing content with conflicts of interest, second-hand citations (blogs citing other blogs), and any source whose claims could not be independently verified from the linked URL. Sources behind paywalls that could not be accessed were also excluded. Each remaining source is categorized by type (peer-reviewed, preprint, industry report, vendor study, or practitioner commentary) in the references section so readers can assess its weight.
 
 **Scope note:** This report focuses on software rot — structural decay, maintainability, and technical debt. Security vulnerabilities in AI-generated code are a significant and well-documented concern, but are outside the scope of this analysis.
@@ -67,6 +69,10 @@ A study of 207 open-source Java projects identified four release-wise refactorin
 
 Google's DORA program measured software delivery performance before the AI era. Elite performers deployed 208 times more frequently and recovered from failures 2,604 times faster than low performers. Loosely coupled architecture was a key predictor of elite performance [9].
 
+### 2.5 Code Health Accelerates Development (Borg et al. 2024)
+
+A study of 46,000 source code files found that the returns on code quality are increasing, not diminishing: improving code health from industry average to elite levels accelerates development by 43% and reduces defects up to 15x [32]. This finding — which won the Best Paper Award at the International Conference on Technical Debt — quantifies what the preceding studies describe structurally: high architectural quality is not a cost center but a development accelerator.
+
 **Confidence: STRONG.** These findings come from decades of independent, peer-reviewed research across different teams, methodologies, and codebases. Architecture's role in preventing rot is among the best-established findings in software engineering.
 
 ---
@@ -105,7 +111,9 @@ Kent Beck has reported a pattern where AI agents sometimes delete tests to make 
 
 A randomized controlled trial by METR found that experienced open-source developers took 19% longer to complete tasks when using AI tools in large open-source repositories — despite expecting a 24% speedup [16].
 
-**Confidence: MODERATE.** The GitClear analyses are vendor studies with disclosed methodology but no peer review. The SATD study is a preprint. The CMU and microservices studies are peer-reviewed but recent. The METR RCT is methodologically strong but represents a single study. Practitioner observations from Tornhill [21] and Beck [22] are consistent with the empirical findings but are not controlled studies. Correlation between AI adoption and quality decline does not establish causation — other factors (team composition changes, project maturity) may contribute.
+Telemetry from over 10,000 developers across 1,255 teams reveals the same pattern at organizational scale: teams with high AI adoption merge 98% more pull requests, but code review time increases by 91% and bugs per developer increase by 9%. Despite individual developers reporting that they feel faster, company-wide delivery metrics remain flat [34]. The bottleneck shifts from writing code to verifying it.
+
+**Confidence: MODERATE.** The GitClear analyses are vendor studies with disclosed methodology but no peer review. The SATD study is a preprint. The CMU and microservices studies are peer-reviewed but recent. The METR RCT is methodologically strong but represents a single study. The Faros telemetry [34] covers a large dataset but is a vendor study without peer review. Practitioner observations from Tornhill [21] and Beck [22] are consistent with the empirical findings but are not controlled studies. Correlation between AI adoption and quality decline does not establish causation — other factors (team composition changes, project maturity) may contribute. However, the pattern is consistent across every independent source.
 
 ---
 
@@ -121,21 +129,48 @@ The 2025 Stack Overflow Developer Survey — the largest annual survey of profes
 
 ---
 
-## 5 Architecture Matters More Than Ever
+## 5 The Two Premises
 
-### 5.1 AI as Amplifier
+The preceding sections established two empirical claims. This section states them explicitly, because everything that follows depends on them.
+
+### 5.1 Premise 1: Architecture Quality Determines AI Outcomes
+
+The evidence for this premise comes from three independent sources.
 
 Google's DORA program — the longest-running academically rigorous research program on software delivery performance — found in its 2025 report that AI's primary role is as an **amplifier**, magnifying an organization's existing strengths and weaknesses [18]. DORA describes AI as amplifying existing organizational practices broadly — process maturity, testing discipline, architectural quality. Since this report focuses on architecture specifically, the inference that architecture determines whether AI helps or hurts is reasonable but narrower than DORA's finding.
 
-### 5.2 Architecture at Scale
+A controlled experiment on 5,000 Python files found that AI coding assistants increase defect risk by at least 30% when applied to code with poor structural health. Code that is well-structured for human maintainability is also well-structured for AI — healthy code produces healthier AI output [33]. Combined with the finding in Section 2.5 that elite code health accelerates development by 43% and reduces defects up to 15x [32], the implication is that architectural quality does not merely correlate with better AI outcomes — it determines them.
 
 Meta's WhatsApp engineering team published their experience deploying AI code generation at enterprise scale over 25 months, producing 3,000+ accepted code changes [19]. Their key finding: architectural guardrails are essential. Their system uses cross-session memory, explicit rules, and retrieval-augmented generation for knowledge grounding to enforce engineering standards [19]. This is a single case study at an organization with exceptional engineering resources, but it illustrates the principle that productive AI-assisted development requires structural constraints.
+
+### 5.2 Premise 2: AI Without Constraints Degrades Quality
+
+The evidence for this premise is documented in detail in Section 3 and summarized here:
+
+- Code complexity increases 41.6% in repositories after AI tool adoption [12].
+- Refactoring — the primary defense against structural decay — declines from 25% to less than 10% of changed lines [11].
+- Code duplication rises from 8.3% to 12.3% [11].
+- Foundational technical debt, once introduced, is removed only 4.2% of the time [13].
+- AI-generated code requires human oversight for system-level concerns and achieves only 50–76% test pass rates when integrated into existing systems [14].
+- Experienced developers take 19% longer with AI tools on complex tasks, despite expecting a 24% speedup [16].
+- Teams merging 98% more AI-assisted pull requests see review time increase 91% and bugs increase 9% per developer, with no improvement in overall delivery metrics [34].
+- A 25% increase in AI tool adoption correlates with a 7.2% decrease in delivery stability [31].
+
+The evidence spans peer-reviewed studies [12][14], established research programs [16][18][31], vendor analyses with disclosed methodology [10][11][34], and practitioner observation [21][22]. No single study is conclusive, but the pattern is consistent across every independent source: AI increases code volume while reducing structural quality.
+
+### 5.3 What Follows
+
+If architecture determines AI outcomes (Premise 1) and AI without constraints degrades quality (Premise 2), then AI-assisted development requires externalized architectural knowledge that constrains code before it is written.
+
+This is not a recommendation — it is a logical consequence of the evidence. The open question is not *whether* AI needs architectural constraints, but *what form* those constraints should take. Section 7 examines every candidate mechanism.
+
+**Confidence: The premises are empirically supported across multiple independent studies (Sections 2–4). The inference follows logically from the premises. Whether the specific practice of spec-anchored development is the best implementation of this inference remains an open empirical question (Section 8).**
 
 ---
 
 ## 6 The Limits of Disposable Code
 
-The preceding sections presented empirical evidence. The analysis that follows — through this section and Section 7.1 — is primarily analytical, reasoning from the evidence and from established software engineering principles rather than reporting empirical findings directly.
+The preceding sections presented empirical evidence. The analysis that follows — through this section and Section 8.1 — is primarily analytical, reasoning from the evidence and from established software engineering principles rather than reporting empirical findings directly.
 
 ### 6.1 The Disposable Code Argument
 
@@ -182,9 +217,33 @@ The disposable code argument fails precisely because it conflates these two sour
 
 ---
 
-## 7 Toward Spec-Anchored Development
+## 7 Why Specifications
 
-### 7.1 Compound Engineering: The Broader Pattern
+Section 5 established that AI-assisted development requires externalized architectural knowledge that constrains code before it is written. This section examines what form those constraints can take.
+
+Five mechanisms are available:
+
+**Code health metrics and quality gates** (CodeScene, SonarQube) detect structural problems after code is generated. A quality gate can reject code that falls below a threshold — but it cannot tell the generator how to structure code in the first place. Metrics are reactive: they evaluate output, they do not guide generation. They answer "is this code healthy?" not "how should this system be designed?"
+
+**Architectural fitness functions** (ArchUnit, ArchGuard) encode structural rules as automated checks — "no dependency from layer A to layer B," "all services must communicate through defined interfaces." These are closer to specifications: they capture some architectural constraints in executable form. But they capture only constraints expressible as testable rules, not design rationale. They can enforce that a boundary exists, but not explain why the boundary was drawn there or what trade-off it reflects. When a fitness function fails, a human knows what to fix; an AI agent without access to the rationale may "fix" the violation by restructuring in a way that breaks a different, unstated constraint.
+
+**Tests** validate what code does — they constrain outputs for given inputs. As Section 6.2 established, a test suite can verify whether generated code is correct, but it cannot guide how code should be structured before it exists. Tests are a verification tool; they do not tell the generator where to place boundaries, which patterns to use, or how to decompose a problem.
+
+**Human review** provides both architectural knowledge and generative guidance — a reviewer can say "this should be a separate service" or "this violates our layering model." But human review does not scale. Telemetry from over 10,000 developers shows that AI adoption increases code review time by 91% [34]. The verification tax documented in Section 3.5 makes human review an increasingly expensive bottleneck, not a sustainable constraint mechanism.
+
+**AI guardrails** — such as Meta's WhatsApp deployment [19] — use cross-session memory, explicit rules, and retrieval-augmented generation for knowledge grounding. These constrain the generator before code is written. They encode architectural knowledge in a form the AI can consult. They are, in every functional sense, specifications: externalized architectural knowledge that guides and constrains code generation.
+
+The pattern is clear. Metrics, fitness functions, and tests are reactive — they evaluate code after generation. Human review is generative but does not scale. The only mechanism that is both generative (guides code before it exists) and scalable (does not require human intervention on every change) is externalized architectural knowledge — design decisions, component relationships, structural constraints, and the rationale behind them, captured in a form that both humans and AI can consult.
+
+That is what a specification is.
+
+This is not a claim that specifications are sufficient. They are not — quality gates, tests, and review remain necessary as verification layers. The claim is that specifications are *necessary*: no combination of reactive mechanisms alone can prevent the architectural degradation documented in Section 3, because reactive mechanisms can only reject bad output, not guide good generation. The evidence in Sections 2–5 establishes that AI needs architectural constraints; the analysis above establishes that specifications are the only constraint mechanism that operates before code is written.
+
+---
+
+## 8 Toward Spec-Anchored Development
+
+### 8.1 Compound Engineering: The Broader Pattern
 
 A practitioner methodology called **compound engineering** (Shipper & Klaassen, 2025) has gained significant traction in the AI-assisted development community [28]. Its core principle is that each development cycle should make the next one better. The methodology structures work into four steps: plan (agents research the codebase and produce a detailed implementation plan), work (agents execute the plan), assess (multi-agent review from multiple perspectives), and compound (learnings from the session are captured into structured files that future agents consult). The distinguishing step is the last one — the systematic capture of knowledge that creates a compounding effect over time.
 
@@ -194,14 +253,14 @@ As originally practiced, compound engineering captures **operational knowledge**
 
 The pattern becomes architecturally significant when what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. Applied at the level where software rot occurs, the compounding effect shifts from task efficiency to structural integrity — each cycle strengthens the system's architecture rather than just improving the next task. The next section explores how the industry is applying this insight.
 
-### 7.2 Spec-Driven Development: The Industry Response
+### 8.2 Spec-Driven Development: The Industry Response
 
 The problems documented in Section 3 — AI generating code without architectural awareness — have not gone unnoticed. A significant industry movement toward **spec-driven development (SDD)** has emerged [25][26], with major open-source frameworks (GitHub's spec-kit [23], OpenSpec, BMAD-METHOD) attracting tens of thousands of GitHub stars, and companies like AWS (Kiro) and Tessl building commercial products around the concept.
 
 Different tools and teams have adopted different levels of specification rigor:
 
 - **Spec-first.** Write a specification before the task, then let AI implement it. The spec may be discarded afterward. This is essentially TDD and API-first design applied to AI-assisted workflows — established practice (TDD, API-first design) applied through a new interface.
-- **Spec-anchored.** The specification persists and evolves alongside the code over its lifecycle. Spec and code are kept in sync through continuous validation. When implementation reveals architectural knowledge that was not anticipated during design — a new boundary, an unforeseen constraint — that knowledge flows back into the spec. This is compound engineering (Section 7.1) applied to design and architecture: the same plan-work-assess-compound cycle, but what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. This is the alignment problem: maintaining the relationship between architectural knowledge and implementation knowledge as both evolve.
+- **Spec-anchored.** The specification persists and evolves alongside the code over its lifecycle. Spec and code are kept in sync through continuous validation. When implementation reveals architectural knowledge that was not anticipated during design — a new boundary, an unforeseen constraint — that knowledge flows back into the spec. This is compound engineering (Section 8.1) applied to design and architecture: the same plan-work-assess-compound cycle, but what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. This is the alignment problem: maintaining the relationship between architectural knowledge and implementation knowledge as both evolve.
 - **Spec-as-source.** Humans maintain *only* the specification. Code is generated, marked as disposable, and regenerated whenever the spec changes. This is the most ambitious vision — and the one that runs directly into the limitations analyzed in Sections 6.1 and 6.2.
 
 Current adoption is concentrated at the spec-first level, which has the widest tooling support and the lowest overhead. Spec-as-source has attracted venture capital but remains unproven at scale. Spec-anchored — the middle ground that would keep architectural and implementation knowledge in continuous sync — is the least practiced. A survey of 514 respondents about Specification by Example — of whom 339 used SBE — found that only 12% maintain version-controlled specification files as their source of truth, and roughly one-third of those using examples do not automate their specifications at all, allowing them to go stale [24]. This survey measured pre-AI BDD/SbE teams rather than AI-era spec-anchored workflows, so the figure is indicative rather than directly applicable. No dominant tool or framework has emerged for this level. Whether this gap reflects inherent difficulty, insufficient tooling, or simply less investment is an open question.
@@ -226,7 +285,7 @@ That only 12% of teams currently sustain this practice admits two honest interpr
 
 This recommendation follows from the analytical framework developed in Sections 6.1 and 6.2. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. Empirical comparison is a critical gap in the current evidence base.
 
-### 7.3 Managed vs. Unmanaged: The Performance Gap
+### 8.3 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Architecturally Managed |
 |---|---|---|
@@ -236,30 +295,31 @@ This recommendation follows from the analytical framework developed in Sections 
 | Delivery Stability | AI amplifies weaknesses [18] | AI amplifies strengths [18] |
 | Developer Trust | 46% distrust [17] | Pre-AI levels (human-reviewed) |
 
-### 7.4 Synthesis
+### 8.4 Synthesis
 
 **The following is an interpretive conclusion drawn from the evidence presented, not a direct empirical finding.**
 
-The logic runs: architecture prevents rot (established across decades of independent research, Section 2) and AI amplifies existing organizational practices (strong finding from DORA's 2025 report [18]). The reasonable inference is that architectural quality is the primary determinant of whether AI-assisted development accelerates delivery or accelerates decay. Teams with strong architectural practices are positioned to benefit from AI's speed advantages while their existing structural discipline constrains the rot that AI-generated code might otherwise introduce. Teams without such practices face the compounding effects documented in Section 3 — rising complexity, declining refactoring, and persistent foundational debt — now amplified by higher code velocity.
+The logic runs: architecture prevents rot (established across decades of independent research, Section 2), AI without constraints degrades quality (consistent across every independent source, Section 3), and architecture determines AI outcomes (Section 5). The logical consequence — that AI needs externalized architectural knowledge — leads to specifications by elimination of alternatives (Section 7). Architectural quality is the primary determinant of whether AI-assisted development accelerates delivery or accelerates decay. Teams with strong architectural practices are positioned to benefit from AI's speed advantages while their existing structural discipline constrains the rot that AI-generated code might otherwise introduce. Teams without such practices face the compounding effects documented in Section 3 — rising complexity, declining refactoring, and persistent foundational debt — now amplified by higher code velocity.
 
-**Confidence: ANALYTICAL.** The DORA amplification finding is strong (established research program, large sample). The Meta case study is a single organization. The disposable code analysis (6.1) and two-sources-of-truth framework (6.2) are logical arguments grounded in established software engineering principles (Parnas, Hyrum's Law) rather than direct empirical tests. The SDD industry analysis (7.2) reflects current developments as of early 2026, with adoption data drawn from practitioner surveys rather than controlled studies. The recommendation for spec-anchored development follows analytically from the preceding evidence and frameworks but has not been empirically validated as a strategy.
+**Confidence: ANALYTICAL.** The two premises — that architecture determines AI outcomes (Section 5.1) and that AI without constraints degrades quality (Section 5.2) — are empirically supported across multiple independent studies. The inference that AI needs externalized architectural knowledge follows logically from these premises. The elimination of alternative constraint mechanisms (Section 7) is an analytical argument. The SDD industry analysis (8.2) reflects current developments as of early 2026, with adoption data drawn from practitioner surveys rather than controlled studies. The specific recommendation for spec-anchored development has not been empirically compared against alternatives — that remains a critical gap in the evidence base.
 
 ---
 
-## 8 Summary of Findings
+## 9 Summary of Findings
 
 - **Software rot is real and costly.** 45% of the world's code is fragile [3], tech debt accounts for 20–40% of technology estate value [4], and Lehman's Laws confirm that complexity increases continuously in evolving systems [2]. This is established science.
-- **Architecture prevents rot.** Classes with antipatterns are up to 31 times more fault-prone [7], the Late Active refactoring pattern produces the best quality outcomes [8], and loosely coupled architecture predicts elite delivery performance [9]. Decades of independent research confirm this.
+- **Architecture prevents rot.** Classes with antipatterns are up to 31 times more fault-prone [7], the Late Active refactoring pattern produces the best quality outcomes [8], loosely coupled architecture predicts elite delivery performance [9], and elite code health accelerates development by 43% while reducing defects up to 15x [32]. Decades of independent research confirm this.
 - **Evidence suggests AI accelerates rot.** Vendor analyses indicate code churn is projected to double [10], refactoring has declined from 25% to less than 10% of changed lines [11], and a peer-reviewed study found 41.6% complexity increase in AI-assisted repositories [12]. These findings warrant attention but require further independent validation.
 - **Current AI tools struggle with architectural reasoning.** They require human oversight for system-level concerns [14] and produce "Hallucinated Coupling" that violates design principles [15].
-- **AI amplifies existing practices.** DORA research shows AI magnifies both strengths and weaknesses [18]. Meta's enterprise deployment found architectural guardrails essential at scale [19].
+- **AI amplifies existing practices.** DORA research shows AI magnifies both strengths and weaknesses [18]. AI increases defect risk by at least 30% on unhealthy code [33]. Meta's enterprise deployment found architectural guardrails essential at scale [19].
 - **Developers see it too.** 46% distrust AI output vs. 33% who trust it, and favorability toward AI tools dropped from 70%+ to 60% year-over-year, even as 81% continue using them [17].
+- **Two premises, one conclusion.** Architecture quality determines AI outcomes (Premise 1, Section 5.1). AI without constraints degrades quality (Premise 2, Section 5.2). The logical consequence: AI needs externalized architectural knowledge that constrains code before it is written. Every alternative constraint mechanism — metrics, tests, fitness functions, human review — is either reactive or does not scale. Specifications are the only mechanism that is both generative and scalable (Section 7).
 - **Code is not fully disposable.** Every non-trivial system has two sources of truth: specifications capture architectural knowledge (structure, design decisions, contracts), and code captures implementation knowledge (edge cases, workarounds, accumulated behavior). Regenerating from the spec recovers the designed structure but loses the implementation knowledge the system has come to depend on.
-- **Spec-anchored development is the most promising response.** Of the three emerging approaches — spec-first, spec-anchored, and spec-as-source — spec-anchored is the only one that directly addresses the divergence between architectural and implementation knowledge. Current adoption is low, arguing not against the approach but for better tooling — and for directing AI at the alignment problem rather than at generating more code. This recommendation is analytical rather than empirically validated.
+- **Spec-anchored development is the most promising response.** Of the three emerging approaches — spec-first, spec-anchored, and spec-as-source — spec-anchored is the only one that directly addresses the divergence between architectural and implementation knowledge. Current adoption is low, arguing not against the approach but for better tooling — and for directing AI at the alignment problem rather than at generating more code. The premises are empirically supported and the conclusion follows logically; the specific practice of spec-anchored development has not been compared against alternatives in a controlled study.
 
 ---
 
-## 9 Sources
+## 10 Sources
 
 ### Peer-Reviewed Research
 
@@ -287,6 +347,9 @@ https://arxiv.org/abs/2603.09004
 [19] **Meta (2026):** *WhatsCode: Large-Scale GenAI Deployment for Developer Efficiency at WhatsApp.* 25-month deployment producing 3,000+ accepted code changes with guardrails for knowledge grounding. Accepted at ICSE-SEIP 2026 (industry experience report).
 https://arxiv.org/html/2512.05314
 
+[32] **Borg, Mones, Tornhill, Pruvost (2024):** *Increasing, not Diminishing: Investigating the Returns of Highly Maintainable Code.* Study of 46,000 source code files finding that improving code health from average to elite accelerates development by 43% and reduces defects up to 15x. Best Paper Award at the 7th ACM/IEEE International Conference on Technical Debt 2024. Authors are affiliated with CodeScene and Lund University.
+https://arxiv.org/abs/2401.13407
+
 ### Preprints
 
 [13] *Self-Admitted Technical Debt in LLM Software.* Empirical study of 477 repositories examining how technical debt accumulates in LLM-related codebases. arXiv, January 2026.
@@ -294,6 +357,9 @@ https://arxiv.org/html/2601.06266v1
 
 [15] *Quantitative Analysis of Technical Debt and Pattern Violation in LLM Architectures.* Introduces "Hallucinated Coupling" metric for AI-generated code. arXiv, December 2025.
 https://arxiv.org/html/2512.04273
+
+[33] **Borg, Hagatulah, Tornhill, Soderberg (2026):** *Code for Machines, Not Just Humans: Quantifying AI-Friendliness with Code Health Metrics.* LLM-based refactoring experiments on 5,000 Python files finding AI increases defect risk by at least 30% on unhealthy code. Authors affiliated with CodeScene and Lund University. arXiv, January 2026.
+https://arxiv.org/abs/2601.02200
 
 ### Established Research Programs
 
@@ -339,6 +405,9 @@ https://github.blog/news-insights/research/research-quantifying-github-copilots-
 
 [23] **GitHub (2025):** *spec-kit — Spec-Driven Development with AI.* Open-source framework for structuring AI-assisted development around specifications.
 https://github.com/github/spec-kit
+
+[34] **Faros AI (2025):** *The AI Productivity Paradox.* Engineering telemetry from 10,000+ developers across 1,255 teams. High-AI-adoption teams merge 98% more PRs but review time increases 91%, bugs increase 9% per developer, and delivery metrics remain flat. Faros AI is an engineering intelligence vendor; not peer-reviewed.
+https://www.faros.ai/blog/ai-software-engineering
 
 ### Practitioner Commentary
 
