@@ -77,7 +77,7 @@ GitClear's analyses of code quality trends reveal a pattern worth noting. Their 
 - **Refactoring declined** from 25% of changed lines in 2021 to less than 10% in 2024 [11].
 - **Code duplication** (copy-pasted lines) rose from 8.3% to 12.3% [11].
 
-The declining refactoring rate combined with rising duplication suggests that AI tools tend to generate new code rather than restructuring what exists [11]. Practitioner experience corroborates this: Adam Tornhill's research found AI-assisted refactoring correct only 37% of the time [21]. The GitClear analyses are vendor studies and are not peer-reviewed, but the dataset is large and the methodology is disclosed.
+The declining refactoring rate combined with rising duplication suggests that AI tools tend to generate new code rather than restructuring what exists [11]. Practitioner experience extends the point: even when developers do refactor, Adam Tornhill's research found AI-assisted refactoring correct only 37% of the time [21]. The GitClear analyses are vendor studies and are not peer-reviewed, but the dataset is large and the methodology is disclosed.
 
 ### 3.2 Complexity Increases
 
@@ -93,9 +93,9 @@ An empirical study assessing 144 AI-generated microservices found that current a
 
 A separate study introduced the concept of **"Hallucinated Coupling"** — when an LLM correctly implements a class but incorrectly imports dependencies, violating inversion of control [15]. AI-generated code can appear correct in isolation while introducing structural debt at the system level.
 
-Kent Beck has reported a related pattern: AI agents sometimes delete tests to make them "pass," undermining the very safety nets that enable confident code changes [22].
-
 ### 3.5 The Verification Tax
+
+Kent Beck has reported a pattern where AI agents sometimes delete tests to make them "pass," undermining the very safety nets that enable confident code changes [22].
 
 A randomized controlled trial by METR found that experienced open-source developers took 19% longer to complete tasks when using AI tools in large open-source repositories — despite expecting a 24% speedup [16].
 
@@ -125,9 +125,13 @@ Google's DORA program — the longest-running academically rigorous research pro
 
 Meta's WhatsApp engineering team published their experience deploying AI code generation at enterprise scale over 25 months, producing 3,000+ accepted code changes [19]. Their key finding: architectural guardrails are essential. Their system uses cross-session memory, explicit rules, and retrieval-augmented generation for knowledge grounding to enforce engineering standards [19]. This is a single case study at an organization with exceptional engineering resources, but it illustrates the principle that productive AI-assisted development requires structural constraints.
 
-### 5.3 The Disposable Code Argument
+---
 
-The preceding sections presented empirical evidence. The analysis that follows — through Sections 5.3, 5.4, and 5.5 — is primarily analytical, reasoning from the evidence and from established software engineering principles rather than reporting empirical findings directly.
+## 6 The Limits of Disposable Code
+
+The preceding sections presented empirical evidence. The analysis that follows — through this section and Section 7.1 — is primarily analytical, reasoning from the evidence and from established software engineering principles rather than reporting empirical findings directly.
+
+### 6.1 The Disposable Code Argument
 
 A reasonable counterargument holds that AI-generated code need not resist rot because it can simply be regenerated. If a component decays, discard it and generate a fresh one. This section examines where that argument holds, where it fails, and what it ultimately implies.
 
@@ -148,7 +152,7 @@ A reasonable counterargument holds that AI-generated code need not resist rot be
 
 Making code safely disposable — even partially — requires deliberate architectural work at every level: clear interfaces, comprehensive contracts, modular boundaries. Meta's WhatsApp deployment [19] illustrates this in practice: making AI-generated code production-worthy required explicit architectural guardrails, cross-session memory, and knowledge grounding — precisely the structural investment the disposable-code argument claims to avoid. Disposable code is not an alternative to architecture; it is a consequence of it.
 
-### 5.4 Two Sources of Truth
+### 6.2 Two Sources of Truth
 
 The analysis above might appear to argue against specification-driven development: if the code is the most complete specification available, why write specs at all? The resolution lies in recognizing that every non-trivial system has at least *two* sources of truth — and they capture different kinds of knowledge.
 
@@ -162,15 +166,19 @@ These are not competing sources of truth — they are complementary. The spec an
 
 In a healthy system, architectural knowledge and implementation knowledge are aligned. In a rotting system, they diverge — the code does things the architecture never anticipated, and the specification (if it still exists) describes a design the code no longer follows. This divergence is itself a form of software rot.
 
-This framing connects directly to Parnas's foundational insight. Information hiding is about *design decisions* — each module conceals a design decision from others [6]. The specification captures those decisions. The code implements them. When implementation reveals a design decision that was not anticipated during specification — a new boundary that needs to exist, a constraint that was not obvious until code was written — updating the spec is not capturing behavior. It is capturing architectural knowledge that was *discovered* during implementation.
-
 **What about tests as specifications?** A comprehensive test suite is itself a form of executable specification — one that captures behavioral contracts more precisely than prose. Tests verify that a component produces the correct outputs for given inputs, handles edge cases, and respects integration contracts. In this sense, tests partially bridge the gap between architectural knowledge and implementation knowledge: they encode accumulated behavioral expectations that would otherwise exist only in the code. However, tests and specifications capture different things. Tests constrain *what* a component does (validation); specifications capture *how* the system is structured and *why* — design rationale, structural relationships across components, and the reasoning behind architectural boundaries. For AI-assisted development specifically, a test suite can verify whether generated code is correct (it validates output), but it cannot guide how code should be structured before it exists (it does not tell the generator where to place boundaries, which patterns to use, or how to decompose a problem). Tests are a verification tool; specifications are a generation tool. Tests and specifications serve complementary roles: together they narrow the gap between architectural and implementation knowledge more than either achieves alone.
+
+This framing connects directly to Parnas's foundational insight. Information hiding is about *design decisions* — each module conceals a design decision from others [6]. The specification captures those decisions. The code implements them. When implementation reveals a design decision that was not anticipated during specification — a new boundary that needs to exist, a constraint that was not obvious until code was written — updating the spec is not capturing behavior. It is capturing architectural knowledge that was *discovered* during implementation.
 
 Specification-driven development works because it forces architectural thinking before implementation. Writing the spec first means deciding on structure, contracts, and boundaries before generating code. The code then fills in everything the spec deliberately left out — the implementation details, the edge cases, the performance optimizations. Good specs make implementations *more* disposable by constraining what a regenerated version must satisfy. But "more disposable" is not "fully disposable." The gap between architectural knowledge (what was designed) and implementation knowledge (what the code actually does) is where regeneration breaks — and where internal design quality still matters.
 
 The disposable code argument fails precisely because it conflates these two sources of truth. It assumes that regenerating from the spec (architectural knowledge) will recover everything in the code (implementation knowledge). It will not. Regeneration recovers the designed structure but loses the accumulated implementation knowledge that the system has come to depend on. No amount of specification discipline closes this gap entirely, because implementation knowledge accumulates through use, not through design — a pattern observable across the evidence in this report: software ages as its environment evolves while its structure remains static [1], evolving systems exhibit continuing growth in size and complexity [2], and the first technical debt introduced into a file is removed only 4.2% of the time [13].
 
-### 5.5 Compound Engineering: The Broader Pattern
+---
+
+## 7 Toward Spec-Anchored Development
+
+### 7.1 Compound Engineering: The Broader Pattern
 
 A practitioner methodology called **compound engineering** (Shipper & Klaassen, 2025) has gained significant traction in the AI-assisted development community [28]. Its core principle is that each development cycle should make the next one better. The methodology structures work into four steps: plan (agents research the codebase and produce a detailed implementation plan), work (agents execute the plan), assess (multi-agent review from multiple perspectives), and compound (learnings from the session are captured into structured files that future agents consult). The distinguishing step is the last one — the systematic capture of knowledge that creates a compounding effect over time.
 
@@ -180,55 +188,59 @@ As originally practiced, compound engineering captures **operational knowledge**
 
 The pattern becomes architecturally significant when what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. Applied at the level where software rot occurs, the compounding effect shifts from task efficiency to structural integrity — each cycle strengthens the system's architecture rather than just improving the next task. The next section explores how the industry is applying this insight.
 
-### 5.6 Spec-Driven Development: The Industry Response
+### 7.2 Spec-Driven Development: The Industry Response
 
 The problems documented in Section 3 — AI generating code without architectural awareness — have not gone unnoticed. A significant industry movement toward **spec-driven development (SDD)** has emerged [25][26], with major open-source frameworks (GitHub's spec-kit [23], OpenSpec, BMAD-METHOD) attracting tens of thousands of GitHub stars, and companies like AWS (Kiro) and Tessl building commercial products around the concept.
 
 Different tools and teams have adopted different levels of specification rigor:
 
 - **Spec-first.** Write a specification before the task, then let AI implement it. The spec may be discarded afterward. This is essentially TDD and API-first design applied to AI-assisted workflows — established practice (TDD, API-first design) applied through a new interface.
-- **Spec-anchored.** The specification persists and evolves alongside the code over its lifecycle. Spec and code are kept in sync through continuous validation. When implementation reveals architectural knowledge that was not anticipated during design — a new boundary, an unforeseen constraint — that knowledge flows back into the spec. This is compound engineering (Section 5.5) applied to design and architecture: the same plan-work-assess-compound cycle, but what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. This is the alignment problem: maintaining the relationship between architectural knowledge and implementation knowledge as both evolve.
-- **Spec-as-source.** Humans maintain *only* the specification. Code is generated, marked as disposable, and regenerated whenever the spec changes. This is the most ambitious vision — and the one that runs directly into the limitations analyzed in Sections 5.3 and 5.4.
+- **Spec-anchored.** The specification persists and evolves alongside the code over its lifecycle. Spec and code are kept in sync through continuous validation. When implementation reveals architectural knowledge that was not anticipated during design — a new boundary, an unforeseen constraint — that knowledge flows back into the spec. This is compound engineering (Section 7.1) applied to design and architecture: the same plan-work-assess-compound cycle, but what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. This is the alignment problem: maintaining the relationship between architectural knowledge and implementation knowledge as both evolve.
+- **Spec-as-source.** Humans maintain *only* the specification. Code is generated, marked as disposable, and regenerated whenever the spec changes. This is the most ambitious vision — and the one that runs directly into the limitations analyzed in Sections 6.1 and 6.2.
 
 Current adoption is concentrated at the spec-first level, which has the widest tooling support and the lowest overhead. Spec-as-source has attracted venture capital but remains unproven at scale. Spec-anchored — the middle ground that would keep architectural and implementation knowledge in continuous sync — is the least practiced. A survey of 514 respondents about Specification by Example — of whom 339 used SBE — found that only 12% maintain version-controlled specification files as their source of truth, and roughly one-third of those using examples do not automate their specifications at all, allowing them to go stale [24]. This survey measured pre-AI BDD/SbE teams rather than AI-era spec-anchored workflows, so the figure is indicative rather than directly applicable. No dominant tool or framework has emerged for this level. Whether this gap reflects inherent difficulty, insufficient tooling, or simply less investment is an open question.
 
-The analysis in this report provides a framework for understanding why the spectrum gets harder as it moves toward full disposability. Spec-first works because it captures architectural knowledge and lets the implementation accumulate its own knowledge through use. Spec-as-source requires specifications to capture *both* architectural and implementation knowledge — the gap that Section 5.4 identifies as fundamentally difficult to close.
+The analysis in this report provides a framework for understanding why the spectrum gets harder as it moves toward full disposability. Spec-first works because it captures architectural knowledge and lets the implementation accumulate its own knowledge through use. Spec-as-source requires specifications to capture *both* architectural and implementation knowledge — the gap that Section 6.2 identifies as fundamentally difficult to close.
 
-**AI's most valuable role may not be generating code.** A parallel trend uses AI to *maintain architectural integrity* rather than produce more code — which is precisely the tooling gap that spec-anchored development needs filled. Tools like CodeScene expose code health metrics as quality gates for AI-generated code. Architecture governance platforms like ArchGuard use AI to analyze and enforce structural constraints. Multi-agent review systems dedicate separate agents to writing, critiquing, testing, and validating architectural alignment. This reframes AI from code producer to architectural integrity tool — using it to detect and repair the divergence between architectural knowledge and implementation knowledge rather than to generate more code. A reasonable objection is that if AI can extract architecture from code — as tools like ArchGuard already do — there is no need to maintain a separate specification. But extraction recovers architecture *as-is*, not *as-intended*. It cannot distinguish a deliberate design decision from accidental coupling that accumulated over years of patches. It cannot recover the rationale behind a boundary — why two services are separated, what failure mode the separation prevents. The specification's value is precisely this difference: it records how the system *should* be structured and why, against which the extracted as-is architecture can be compared. If these tools mature, they could make spec-anchored development practical by automating the continuous sync between specification and implementation that teams currently fail to sustain manually. Whether AI-assisted spec maintenance can deliver on this promise is an empirical question that current evidence cannot answer.
+**AI's most valuable role may not be generating code.** A parallel trend uses AI to *maintain architectural integrity* rather than produce more code — which is precisely the tooling gap that spec-anchored development needs filled. Tools like CodeScene expose code health metrics as quality gates for AI-generated code. Architecture governance platforms like ArchGuard use AI to analyze and enforce structural constraints. Multi-agent review systems dedicate separate agents to writing, critiquing, testing, and validating architectural alignment. This reframes AI from code producer to architectural integrity tool — using it to detect and repair the divergence between architectural knowledge and implementation knowledge rather than to generate more code.
 
-**The waterfall risk.** ThoughtWorks [26] and Martin Fowler [25] have noted that rigid specifications could recreate waterfall's problems — slow feedback, premature commitment, specs that calcify before implementation reveals their flaws. The framework from Section 5.4 clarifies this risk: specifications that capture *architectural knowledge* (structure, design decisions, contracts, constraints) remain stable as implementations change. Specifications that attempt to capture *implementation knowledge* (detailed behavioral requirements, edge case handling, performance specifics) calcify because implementation knowledge evolves through use, not through upfront design. The waterfall analogy is structurally misleading: waterfall specifies once, then implements, then discovers the specification was wrong. Spec-anchored development specifies continuously alongside implementation, with implementation discoveries flowing back into the specification. The legitimate concern is not waterfall-style rigidity but ongoing maintenance cost. The SDD movement will succeed to the extent that it specifies architecture and avoids specifying implementation details.
+A reasonable objection is that if AI can extract architecture from code — as tools like ArchGuard already do — there is no need to maintain a separate specification. But extraction recovers architecture *as-is*, not *as-intended*. It cannot distinguish a deliberate design decision from accidental coupling that accumulated over years of patches. It cannot recover the rationale behind a boundary — why two services are separated, what failure mode the separation prevents. The specification's value is precisely this difference: it records how the system *should* be structured and why, against which the extracted as-is architecture can be compared.
 
-**The fundamental bet** underlying spec-driven development is that if you can precisely specify what you want, AI becomes a reliable generator. The evidence in this report suggests this bet is partially correct — spec-first and spec-anchored approaches align with the established practices in Section 2. But complete specification remains impractical for the reasons Sections 5.3 and 5.4 describe. The industry is learning in real time where that ceiling is.
+If these tools mature, they could make spec-anchored development practical by automating the continuous sync between specification and implementation that teams currently fail to sustain manually. Whether AI-assisted spec maintenance can deliver on this promise is an empirical question that current evidence cannot answer.
 
-**This report's recommendation: spec-anchored development.** Of the three approaches, spec-anchored is the only one that directly addresses the core problem this report identifies — the divergence between architectural knowledge and implementation knowledge that drives software rot. Spec-first is valuable but incomplete: it front-loads architectural thinking, then lets the specification go stale as the code evolves. Spec-as-source is impractical for non-trivial systems, as Sections 5.3 and 5.4 demonstrate. Spec-anchored development maintains a living specification that evolves alongside the code: architectural knowledge discovered during implementation flows back into the spec, keeping the two sources of truth aligned. This parallels the refactoring finding from Section 2.3: the Late Active pattern succeeds because it maintains continuous structural discipline rather than treating quality as a one-time upfront investment [8].
+**The waterfall risk.** ThoughtWorks [26] and Martin Fowler [25] have noted that rigid specifications could recreate waterfall's problems — slow feedback, premature commitment, specs that calcify before implementation reveals their flaws. The framework from Section 6.2 clarifies this risk: specifications that capture *architectural knowledge* (structure, design decisions, contracts, constraints) remain stable as implementations change. Specifications that attempt to capture *implementation knowledge* (detailed behavioral requirements, edge case handling, performance specifics) calcify because implementation knowledge evolves through use, not through upfront design. The waterfall analogy is structurally misleading: waterfall specifies once, then implements, then discovers the specification was wrong. Spec-anchored development specifies continuously alongside implementation, with implementation discoveries flowing back into the specification. The legitimate concern is not waterfall-style rigidity but ongoing maintenance cost. The SDD movement will succeed to the extent that it specifies architecture and avoids specifying implementation details.
+
+**The fundamental bet** underlying spec-driven development is that if you can precisely specify what you want, AI becomes a reliable generator. The evidence in this report suggests this bet is partially correct — spec-first and spec-anchored approaches align with the established practices in Section 2. But complete specification remains impractical for the reasons Sections 6.1 and 6.2 describe. The industry is learning in real time where that ceiling is.
+
+**This report's recommendation: spec-anchored development.** Of the three approaches, spec-anchored is the only one that directly addresses the core problem this report identifies — the divergence between architectural knowledge and implementation knowledge that drives software rot. Spec-first is valuable but incomplete: it front-loads architectural thinking, then lets the specification go stale as the code evolves. Spec-as-source is impractical for non-trivial systems, as Sections 6.1 and 6.2 demonstrate. Spec-anchored development maintains a living specification that evolves alongside the code: architectural knowledge discovered during implementation flows back into the spec, keeping the two sources of truth aligned. This parallels the refactoring finding from Section 2.3: the Late Active pattern succeeds because it maintains continuous structural discipline rather than treating quality as a one-time upfront investment [8].
 
 The resemblance to documentation-driven development is not superficial — it is historically grounded. Decades of attempts to keep design documents synchronized with code have failed, from CASE tools in the 1980s to UML round-tripping in the 2000s. Two things are different now. First, AI code generation makes architectural knowledge more valuable, not less: human developers carry implicit understanding of a system's structure and constraints into every coding session, but AI agents start each session with no context beyond what is explicitly provided. The specification becomes the mechanism for transmitting architectural knowledge to the generator. Second, the maintenance burden that killed previous documentation efforts — the manual labor of keeping specs current as code evolves — is precisely the kind of structured, diff-aware task that AI itself could automate.
 
 That only 12% of teams currently sustain this practice admits two honest interpretations. It may indicate a tooling gap — existing Specification by Example tools like Cucumber and SpecFlow require manual maintenance of specification-to-code mappings, which is exactly the overhead that causes teams to abandon the practice. If AI can automate this maintenance, the 12% figure reflects a solvable problem. Alternatively, it may indicate fundamental impracticality — that keeping specifications synchronized with evolving code is inherently too costly for most teams regardless of tooling. This report cannot resolve which interpretation is correct. It can note that previous SbE tooling automated *execution* of specs but left *maintenance* of specs to humans. AI-assisted spec maintenance is a genuinely new capability, not yet validated at scale. The recommendation for spec-anchored development is conditional on this capability maturing.
 
-This recommendation follows from the analytical framework developed in Sections 5.3 and 5.4. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. Empirical comparison is a critical gap in the current evidence base.
+This recommendation follows from the analytical framework developed in Sections 6.1 and 6.2. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. Empirical comparison is a critical gap in the current evidence base.
 
-### 5.7 Managed vs. Unmanaged: The Performance Gap
+### 7.3 Managed vs. Unmanaged: The Performance Gap
 
 | Metric | Unmanaged AI Code | Architecturally Managed |
 |---|---|---|
-| Initial Build Speed | 55% Faster [20] | Baseline |
-| Code Complexity | +41.6% [12] | Baseline |
+| Initial Build Speed | 55% Faster [20] | Pre-AI levels |
+| Code Complexity | +41.6% [12] | Pre-AI levels |
 | Refactoring Rate | Declining (<10%) [11] | Late Active Pattern [8] |
 | Delivery Stability | AI amplifies weaknesses [18] | AI amplifies strengths [18] |
-| Developer Trust | 46% distrust [17] | Baseline (human-reviewed) |
+| Developer Trust | 46% distrust [17] | Pre-AI levels (human-reviewed) |
 
-### 5.8 Synthesis
+### 7.4 Synthesis
 
 **The following is an interpretive conclusion drawn from the evidence presented, not a direct empirical finding.**
 
 The logic runs: architecture prevents rot (established across decades of independent research, Section 2) and AI amplifies existing organizational practices (strong finding from DORA's 2025 report [18]). The reasonable inference is that architectural quality is the primary determinant of whether AI-assisted development accelerates delivery or accelerates decay. Teams with strong architectural practices are positioned to benefit from AI's speed advantages while their existing structural discipline constrains the rot that AI-generated code might otherwise introduce. Teams without such practices face the compounding effects documented in Section 3 — rising complexity, declining refactoring, and persistent foundational debt — now amplified by higher code velocity.
 
-**Confidence: ANALYTICAL.** The DORA amplification finding is strong (established research program, large sample). The Meta case study is a single organization. The disposable code analysis (5.3) and two-sources-of-truth framework (5.4) are logical arguments grounded in established software engineering principles (Parnas, Hyrum's Law) rather than direct empirical tests. The SDD industry analysis (5.5) reflects current developments as of early 2026, with adoption data drawn from practitioner surveys rather than controlled studies. The recommendation for spec-anchored development follows analytically from the preceding evidence and frameworks but has not been empirically validated as a strategy.
+**Confidence: ANALYTICAL.** The DORA amplification finding is strong (established research program, large sample). The Meta case study is a single organization. The disposable code analysis (6.1) and two-sources-of-truth framework (6.2) are logical arguments grounded in established software engineering principles (Parnas, Hyrum's Law) rather than direct empirical tests. The SDD industry analysis (7.2) reflects current developments as of early 2026, with adoption data drawn from practitioner surveys rather than controlled studies. The recommendation for spec-anchored development follows analytically from the preceding evidence and frameworks but has not been empirically validated as a strategy.
 
 ---
 
-## 6 Summary of Findings
+## 8 Summary of Findings
 
 - **Software rot is real and costly.** 45% of the world's code is fragile [3], tech debt accounts for 20–40% of technology estate value [4], and Lehman's Laws confirm that complexity increases continuously in evolving systems [2]. This is established science.
 - **Architecture prevents rot.** Classes with antipatterns are up to 31 times more fault-prone [7], the Late Active refactoring pattern produces the best quality outcomes [8], and loosely coupled architecture predicts elite delivery performance [9]. Decades of independent research confirm this.
@@ -241,7 +253,7 @@ The logic runs: architecture prevents rot (established across decades of indepen
 
 ---
 
-## 7 Sources
+## 9 Sources
 
 ### Peer-Reviewed Research
 
