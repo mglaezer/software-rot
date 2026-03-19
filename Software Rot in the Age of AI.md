@@ -8,13 +8,16 @@
 
 ## The Problem
 
-45% of the world's code already suffers from structural weakness [3]. AI-assisted development was expected to improve this. The early evidence suggests it is making it worse:
+Poor software quality costs the US economy $2.41 trillion per year [5]. Technical debt consumes 20–40% of companies' entire technology budgets [4]. It would take 25 million developers working full-time for 9 years to pay off the debt that already exists [3].
+
+AI-assisted development was expected to reduce this burden. The early evidence suggests it is increasing it:
 
 - **Code complexity increased 41.6%** in repositories after adopting AI tools, compared to the same repositories before adoption [12].
 - **Refactoring declined from 25% to less than 10%** of changed lines over the period AI tools reached mainstream use [11].
 - **Delivery stability drops 7.2%** for every 25% increase in AI tool adoption [31].
+- **Review time increases 91%** in teams with high AI adoption, while delivery metrics remain flat [34].
 
-81% of professional developers now use these tools [17]. The question is no longer whether AI changes how code is written, but whether anyone is ensuring it doesn't rot faster.
+81% of professional developers now use these tools [17]. The debt is growing. The tools meant to help are making the structural problems worse.
 
 ---
 
