@@ -6,6 +6,12 @@
 
 **March 15, 2026**
 
+## The Problem
+
+45% of the world's code already suffers from structural weakness [3]. AI-assisted development was expected to improve this. The early evidence suggests it is making it worse. A study of 806 repositories found that code complexity increased by 41.6% after adopting AI coding tools, compared to the same repositories before adoption [12]. Over the same period that AI tools reached mainstream use, refactoring — the primary defense against structural decay — declined from 25% to less than 10% of changed lines across the industry [11], and higher AI tool adoption correlates with a 7.2% decrease in delivery stability [31]. 81% of professional developers now use these tools [17]. The question is no longer whether AI changes how code is written, but whether anyone is ensuring it doesn't rot faster.
+
+---
+
 ## Goals
 
 This report examines software rot — the progressive decay of software systems — through four connected arguments:
@@ -299,6 +305,9 @@ https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/
 
 [18] **Google DORA (2025):** *State of AI-assisted Software Development 2025.* AI acts as an amplifier of existing organizational practices.
 https://dora.dev/research/2025/dora-report/
+
+[31] **Google DORA (2024):** *Accelerate State of DevOps Report 2024.* A 25% increase in AI tool adoption correlates with a 7.2% decrease in delivery stability and a 1.5% decrease in throughput.
+https://dora.dev/research/2024/dora-report/ (PDF: https://services.google.com/fh/files/misc/2024_final_dora_report.pdf)
 
 ### Industry Reports and Surveys
 
