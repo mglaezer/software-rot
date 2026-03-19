@@ -294,17 +294,7 @@ That only 12% of teams currently sustain this practice has two honest interpreta
 
 This recommendation follows from the analytical framework developed in Sections 6.1 and 6.2. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. Empirical comparison is a critical gap in the current evidence base.
 
-### 8.3 Managed vs. Unmanaged: The Performance Gap
-
-| Metric | Unmanaged AI Code | Architecturally Managed |
-|---|---|---|
-| Initial Build Speed | 55% Faster [20] | Pre-AI levels |
-| Code Complexity | +41.6% [12] | Pre-AI levels |
-| Refactoring Rate | Declining (<10%) [11] | Late Active Pattern [8] |
-| Delivery Stability | AI amplifies weaknesses [18] | AI amplifies strengths [18] |
-| Developer Trust | 46% distrust [17] | Pre-AI levels (human-reviewed) |
-
-### 8.4 Synthesis
+### 8.3 Synthesis
 
 **What follows is an interpretive conclusion drawn from the evidence presented, not a direct empirical finding.**
 
