@@ -175,7 +175,7 @@ If architecture determines AI outcomes (Premise 1) and AI without constraints de
 
 This is not a recommendation — it is a logical consequence of the evidence. The open question is not *whether* AI needs architectural constraints, but *what form* those constraints should take. Section 7 examines every candidate mechanism.
 
-**Confidence: The premises are empirically supported across multiple independent studies (Sections 2–4). The inference follows logically from the premises. Whether the specific practice of spec-anchored development is the best implementation of this inference remains an open empirical question (Section 8).**
+**Confidence: The premises are empirically supported across multiple independent studies (Sections 2–4). The inference follows logically from the premises. Whether any specific practice is the best implementation of this inference remains an open empirical question (Section 8).**
 
 ---
 
@@ -262,7 +262,7 @@ This is not a claim that specifications are sufficient. They are not — quality
 
 A practitioner methodology called **compound engineering** (Shipper & Klaassen, 2025) has gained significant traction in the AI-assisted development community [28]. The core idea: each development cycle should make the next one better. The methodology has four steps: plan (agents research the codebase and produce a detailed implementation plan), work (agents execute the plan), assess (multi-agent review from multiple perspectives), and compound (learnings are captured into structured files that future agents consult). The key step is the last one — systematically capturing knowledge so it compounds over time.
 
-Will Larson characterized compound engineering as comprising "two extremely well-known patterns, one moderately well-known pattern, and one pattern that many practitioners have intuited but have not found a consistent mechanism to implement" [29]. He found it "not shocking" but "extremely effective" at converting intuitive best practices into something "specific, concrete, and largely automatic."
+Will Larson characterized compound engineering as comprising two extremely well-known patterns (plan and work), one moderately well-known pattern (assess), and one pattern that many practitioners have intuited but have not found a consistent mechanism to implement (compound) [29]. He found it "not shocking" but "extremely effective" at converting intuitive best practices into something "specific, concrete, and largely automatic."
 
 As originally practiced, compound engineering captures **operational knowledge** — bug patterns, coding conventions, failure modes, problem-solving heuristics. This makes each *task* more efficient but does not maintain a structural model of the system. A team could practice compound engineering perfectly and still have its architecture rot — it would simply rot more efficiently.
 
