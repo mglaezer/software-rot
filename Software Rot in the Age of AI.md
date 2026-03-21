@@ -226,6 +226,18 @@ Specification-driven development works because it forces architectural thinking 
 
 The disposable code argument fails precisely because it conflates these two sources of truth. It assumes that regenerating from the spec (architectural knowledge) will recover everything in the code (implementation knowledge). It will not. Regeneration recovers the designed structure but loses the accumulated implementation knowledge that the system has come to depend on. No amount of specification discipline closes this gap entirely, because implementation knowledge accumulates through use, not through design — a pattern observable across the evidence in this report: software ages as its environment evolves while its structure remains static [1], evolving systems exhibit continuing growth in size and complexity [2], and the first technical debt introduced into a file is removed only 4.2% of the time [13].
 
+### 6.3 The Team Alignment Dimension
+
+The preceding sections analyzed disposability and specification in terms of system complexity. But there is a second dimension: team size.
+
+A solo developer carries architectural knowledge implicitly — module boundaries, design rationale, unwritten constraints all live in one person's head. For prototypes, personal projects, and hackathons, this works. Andrej Karpathy coined "vibe coding" in February 2025 to describe exactly this mode: building software by feel, for "throwaway weekend projects" where the developer *is* the specification [55]. The 2025 Stack Overflow survey confirms this is how practitioners understand it: 72% of professional developers say vibe coding is "not part" of their professional work [17].
+
+As teams grow, implicit knowledge fails. Scholtes et al. studied 580,000 commits across 58 GitHub projects and found that individual developer productivity drops from ~10 commits/week for solo developers to ~2/dev/week in teams of 50+ — but projects with modular architecture resisted this decline while coupled projects did not [57]. Nagappan et al. found that organizational structure predicted defects in Windows Vista better than any code metric — better than complexity, churn, or test coverage [58]. The coordination cost is not incidental; Boehm's COCOMO II model treats architecture and risk resolution as one of five scaling exponents — projects without it face superlinear cost growth as team size increases [60]. DORA's research on documentation quality sharpens the point: teams with above-average documentation quality see a 1,525% improvement from trunk-based development, while teams with below-average documentation see only 36% [59]. The same practice, radically different outcomes — determined by whether architectural knowledge is externalized.
+
+AI agents face the same coordination problem as new team members. They start every session with zero context — no memory of yesterday's architectural decisions, no implicit understanding of why two services are separated, no awareness of the constraint a teammate discovered last week. The Codified Context study [53] found that over half of specialist agent content was project-domain knowledge, and the architecture achieved zero persistence bugs across 74 sessions — but only because that knowledge was explicitly externalized. Without it, each AI session is a new hire's first day, every day.
+
+Karpathy's own trajectory illustrates the pattern. He coined "vibe coding" for solo prototypes in February 2025. By mid-2025, he was championing "context engineering" — the discipline of providing AI with the right information. By 2026, the community had moved to "agentic engineering" [56]. The inventor's evolution from vibe coding to structured context mirrors the broader argument: what works for one person building a prototype does not work for teams building production systems. The specification is not bureaucracy — it is the mechanism that transmits architectural knowledge to every participant, human or AI, who was not present when the decisions were made.
+
 ---
 
 ## 7 Why Specifications
@@ -320,6 +332,7 @@ The logic runs: architecture prevents rot (established across decades of indepen
 - **Developers see it too.** 46% distrust AI output vs. 33% who trust it, and favorability toward AI tools dropped from 70%+ to 60% year-over-year, even as 81% continue using them [17].
 - **Two premises, one conclusion.** Architecture quality determines AI outcomes (Premise 1, Section 5.1). AI without constraints degrades quality (Premise 2, Section 5.2). The logical consequence: AI needs externalized architectural knowledge that constrains code before it is written. Every alternative constraint mechanism — metrics, tests, fitness functions, human review — is either reactive or does not scale. Specifications are the only mechanism that is both generative and scalable (Section 7).
 - **Code is not fully disposable.** Every non-trivial system has two sources of truth: specifications capture architectural knowledge (structure, design decisions, contracts), and code captures implementation knowledge (edge cases, workarounds, accumulated behavior). Regenerating from the spec recovers the designed structure but loses the implementation knowledge the system has come to depend on.
+- **Team size creates an independent need for specifications.** Solo developers carry architectural knowledge implicitly, but implicit knowledge fails as teams grow — individual productivity drops and defects increase unless architecture is modular and externalized [57][58]. AI agents face the same problem: they start every session with zero context, making them perpetual new hires who need explicit architectural knowledge to coordinate effectively [53]. "Vibe coding" works for prototypes and solo projects [55]; production teams need externalized specifications for the same reason they need onboarding documentation.
 - **Spec-anchored development is the most promising response.** Of the three emerging approaches — spec-first, spec-anchored, and spec-as-source — spec-anchored is the only one that directly addresses the divergence between architectural and implementation knowledge. Current adoption is low, arguing not against the approach but for better tooling — and for directing AI at the alignment problem rather than at generating more code. The premises are empirically supported and the conclusion follows logically; the specific practice of spec-anchored development has not been compared against alternatives in a controlled study.
 
 ---
@@ -373,6 +386,12 @@ https://www.scitepress.org/Papers/2025/132868/132868.pdf
 [46] **Cui, Yin, Zhuo, Peng, Cui & David (2025):** *Generative AI and Worker Productivity: Evidence from Three Field Experiments.* Three RCTs across Microsoft, Accenture, and a Fortune 100 company (n=4,867) finding 26% more tasks completed with AI assistance. Did not measure code quality. Published in *Management Science*.
 https://pubsonline.informs.org/doi/10.1287/mnsc.2025.00535
 
+[57] **Scholtes, Mavrodiev & Schweitzer (2016):** *From Aristotle to Ringelmann: a large-scale analysis of team productivity and coordination in Open Source Software projects.* Study of 580,000 commits from 58 GitHub projects finding individual productivity declines with team size, but modular projects resist the decline. Published in *Empirical Software Engineering* 21(2), pp. 642–683.
+https://link.springer.com/article/10.1007/s10664-015-9406-4
+
+[58] **Nagappan, Murphy & Basili (2008):** *The Influence of Organizational Structure on Software Quality: An Empirical Case Study.* Organizational structure predicted defects in Windows Vista better than code metrics (complexity, churn, coverage). Published at ICSE 2008.
+https://www.microsoft.com/en-us/research/publication/the-influence-of-organizational-structure-on-software-quality-an-empirical-case-study/
+
 ### Preprints
 
 [13] *Self-Admitted Technical Debt in LLM Software.* Empirical study of 477 repositories examining how technical debt accumulates in LLM-related codebases. arXiv, January 2026.
@@ -412,6 +431,9 @@ https://dora.dev/research/2024/dora-report/ (PDF: https://services.google.com/fh
 
 [48] **METR (2026):** *Uplift Measurement Update.* Documented severe selection bias problems in AI productivity research. Research program methodology update, February 2026.
 https://metr.org/blog/2026-02-24-uplift-update/
+
+[59] **Google DORA:** *Documentation Quality Capability.* Documentation quality drives the implementation of every technical practice DORA studied. Above-average documentation: 1,525% improvement from trunk-based development. Below-average: 36%.
+https://dora.dev/capabilities/documentation-quality/
 
 ### Industry Reports and Surveys
 
@@ -473,10 +495,19 @@ https://www.thoughtworks.com/en-us/insights/blog/agile-engineering-practices/spe
 [41] **Robert C. Martin / InfoQ (2017):** Commentary on TDD and architecture. "The idea that the high level design and architecture of a system emerge from TDD is, frankly, absurd."
 https://www.infoq.com/news/2017/03/does-tdd-harm-architecture/
 
+[55] **Andrej Karpathy (2025):** Coined "vibe coding" for AI-assisted development of "throwaway weekend projects" where the developer builds by feel rather than specification. Posted on X, February 2025.
+https://x.com/karpathy/status/1886192184808149383
+
+[56] **The New Stack (2025):** *Vibe Coding Is Passé.* Traces the evolution from vibe coding (February 2025) through context engineering (mid-2025) to agentic engineering (2026), documenting the practitioner community's shift toward structured AI-assisted development.
+https://thenewstack.io/vibe-coding-is-passe/
+
 ### Practitioner Books
 
 [38] **Ford, Parsons, Kua & Sadalage (2022):** *Building Evolutionary Architectures.* Defines holistic fitness functions combining multiple architectural constraint mechanisms. O'Reilly, 2nd edition.
 https://www.oreilly.com/library/view/building-evolutionary-architectures/9781492097532/
+
+[60] **Boehm et al. (2000):** *Software Cost Estimation with COCOMO II.* Empirical cost model treating Architecture/Risk Resolution as one of five scaling exponents — projects without it face superlinear cost growth. Prentice Hall.
+https://en.wikipedia.org/wiki/COCOMO
 
 ### Practitioner Formulations
 
