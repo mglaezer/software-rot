@@ -1,4 +1,4 @@
-# Software Rot in the Age of AI: An Evidence-Based Analysis (2025–2026)
+# Software Rot in the Age of AI: Evidence and Analysis (2025–2026)
 
 **Technical Analysis Report**
 
