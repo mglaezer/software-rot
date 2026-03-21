@@ -36,7 +36,7 @@ The first three arguments are empirically grounded (Sections 2–5). The fourth 
 
 **Scope note:** This report focuses on software rot — structural decay, maintainability, and technical debt. Security vulnerabilities in AI-generated code are a significant and well-documented concern, but are outside the scope of this analysis.
 
-**A plain-language summary** of this report is available in Appendix A at the end of this document for readers who prefer a less technical overview.
+**A plain-language summary** of this report is available in the companion document (*Software Rot in the Age of AI — Summary*) for readers who prefer a less technical overview.
 
 ---
 
@@ -122,7 +122,7 @@ A randomized controlled trial by METR found that experienced open-source develop
 
 Telemetry from over 10,000 developers across 1,255 teams reveals the same pattern at organizational scale: teams with high AI adoption merge 98% more pull requests, but code review time increases by 91% and bugs per developer increase by 9%. Despite individual developers reporting that they feel faster, company-wide delivery metrics remain flat [34]. The bottleneck shifts from writing code to verifying it.
 
-**Confidence: MODERATE.** The GitClear analyses are vendor studies with disclosed methodology but no peer review. The SATD study is a preprint. The CMU and microservices studies are peer-reviewed but recent. The METR RCT is methodologically strong but represents a single study. The Faros telemetry [34] covers a large dataset but is a vendor study without peer review. Practitioner observations from Tornhill [21] and Beck [22] are consistent with the empirical findings but are not controlled studies. Correlation between AI adoption and quality decline does not establish causation — other factors (team composition changes, project maturity) may contribute. However, the pattern is consistent across every independent source.
+**Confidence: MODERATE.** The GitClear analyses are vendor studies with disclosed methodology but no peer review. The SATD study is a preprint. The CMU and microservices studies are peer-reviewed but recent. The METR RCT is methodologically strong but represents a single study. The Faros telemetry [34] covers a large dataset but is a vendor study without peer review. Practitioner observations from Tornhill [21] and Beck [22] are consistent with the empirical findings but are not controlled studies. On the causal question: the CMU study [12] uses difference-in-differences with propensity score matching — a causal inference methodology, not mere correlation. A separate DiD study exploiting Copilot's June 2021 release as a natural experiment (2,755 repositories, repository and month-year fixed effects) found peripheral developers increased commits by 43.5% while core developers decreased commits by 42.9%, with review workload rising 6.5% and PR rework rising 2.4% [45]. These causal designs strengthen the evidence, though other factors may still contribute. Notably, a Jellyfish analysis of 2.16 million PRs across 259 companies found no meaningful correlation between bugs and AI adoption level [50], and DORA 2024 reported a modest +3.4% in self-reported code quality alongside the -7.2% stability decline already cited [31]. The three largest RCTs to date (Cui et al., n=4,867 across Microsoft, Accenture, and a Fortune 100 company) found AI-assisted developers completed 26% more tasks — but measured only task throughput, not code quality [46]. The strongest causal evidence for productivity does not address the quality question. METR has also documented severe selection bias problems in AI productivity research more broadly [48]. However, the pattern of quality decline is consistent across every independent source that measures it.
 
 ---
 
@@ -144,13 +144,15 @@ The preceding sections established two empirical claims. This section states the
 
 ### 5.1 Premise 1: Architecture Quality Determines AI Outcomes
 
-The evidence for this premise comes from three independent sources.
+The evidence for this premise comes from four independent sources.
 
 Google's DORA program — the longest-running rigorous research program on software delivery performance — found in its 2025 report that AI primarily acts as an **amplifier**: it magnifies an organization's existing strengths and weaknesses [18]. If your practices are strong, AI makes them stronger. If they're weak, AI makes them worse. DORA describes this amplification broadly — process maturity, testing discipline, architectural quality. Since this report focuses on architecture specifically, the inference that architecture determines whether AI helps or hurts is reasonable but narrower than DORA's finding.
 
-A controlled experiment on 5,000 Python files found that AI coding assistants increase defect risk by at least 30% when applied to code with poor structural health. Well-structured code produces healthier AI output — code that is good for humans is also good for AI [33]. Combined with the finding in Section 2.5 that elite code health accelerates development by 43% and reduces defects up to 15x [32], the picture is clear: architectural quality doesn't merely correlate with better AI outcomes — it determines them.
+A controlled experiment on 5,000 Python files found that AI coding assistants increase defect risk by at least 30% when applied to code with poor structural health. Well-structured code produces healthier AI output — code that is good for humans is also good for AI [33]. The same study found a significant positive corollary: each standard deviation of code health improvement raised the odds of successful AI refactoring by 20–40% [33]. Combined with the finding in Section 2.5 that elite code health accelerates development by 43% and reduces defects up to 15x [32], the picture is clear: architectural quality doesn't merely correlate with better AI outcomes — it determines them.
 
 Meta's WhatsApp engineering team reported on their experience deploying AI code generation at enterprise scale over 25 months, producing 3,000+ accepted code changes [19]. Their key finding: architectural guardrails are essential. Their system uses cross-session memory, explicit rules, and retrieval-augmented generation to enforce engineering standards [19]. This is a single case study at an organization with exceptional engineering resources, but it shows the same pattern: productive AI-assisted development requires structural constraints.
+
+A smaller-scale case illustrates the same dynamic: loveholidays initially saw AI degrade code quality without guardrails, then scaled to 50% agent-assisted code while maintaining quality after adding automated code health checks [51]. This is a vendor case study, not a controlled experiment, but it demonstrates the amplification thesis in practice — the same AI tools that degraded quality in an unconstrained environment maintained it once architectural constraints were in place.
 
 ### 5.2 Premise 2: AI Without Constraints Degrades Quality
 
@@ -165,7 +167,7 @@ The evidence for this premise is documented in detail in Section 3 and summarize
 - Teams merging 98% more AI-assisted pull requests see review time increase 91% and bugs increase 9% per developer, with no improvement in overall delivery metrics [34].
 - A 25% increase in AI tool adoption correlates with a 7.2% decrease in delivery stability [31].
 
-This evidence comes from peer-reviewed studies [12][14], established research programs [16][18][31], vendor analyses with disclosed methodology [10][11][34], and practitioner experience [21][22]. No single study is conclusive, but every independent source points the same way: AI increases code volume while reducing structural quality.
+This evidence comes from peer-reviewed studies [12][14], established research programs [16][18][31], vendor analyses with disclosed methodology [10][11][34], and practitioner experience [21][22]. No single study is conclusive. One vendor analysis (Jellyfish, 2.16 million PRs) found no meaningful correlation between bugs and AI adoption [50], but every source that measures structural quality — complexity, duplication, refactoring rates, architectural coherence — points the same way: AI increases code volume while reducing structural discipline.
 
 ### 5.3 What Follows
 
@@ -236,6 +238,8 @@ Five mechanisms are available:
 
 **Architectural fitness functions** (ArchUnit, ArchGuard) encode structural rules as automated checks — "no dependency from layer A to layer B," "all services must communicate through defined interfaces." These are closer to specifications: they capture some architectural constraints in executable form. But they capture only constraints expressible as testable rules, not design rationale. They can enforce that a boundary exists, but not explain why the boundary was drawn there or what trade-off it reflects. When a fitness function fails, a human knows what to fix; an AI agent without access to the rationale may "fix" the violation by restructuring in a way that breaks a different, unstated constraint.
 
+These mechanisms can be combined — Ford et al.'s "holistic fitness functions" [38] compose metrics, tests, and architectural checks into unified quality gates. But holistic functions still require someone to define *what* to check, which is itself architectural knowledge that must be externalized. And even with all mechanisms active, gaps persist: Bacchelli and Bird found that only ~15% of code review comments indicate defects, with architectural issues rarer still [39]; Besker, Martini, and Bosch found developers waste 23% of their time on technical debt even in teams using agile practices that combine testing, CI, and review [40]. As Robert C. Martin put it: "The idea that the high level design and architecture of a system emerge from TDD is, frankly, absurd" [41]. No combination of reactive mechanisms substitutes for articulated architectural intent.
+
 **Tests** validate what code does — they constrain outputs for given inputs. As Section 6.2 established, a test suite can verify whether generated code is correct, but it cannot guide how code should be structured before it exists. Tests are a verification tool; they do not tell the generator where to place boundaries, which patterns to use, or how to decompose a problem.
 
 **Human review** provides both architectural knowledge and generative guidance — a reviewer can say "this should be a separate service" or "this violates our layering model." But human review does not scale. Telemetry from over 10,000 developers shows that AI adoption increases code review time by 91% [34]. The verification tax documented in Section 3.5 makes human review an increasingly expensive bottleneck, not a sustainable constraint mechanism.
@@ -245,6 +249,8 @@ Five mechanisms are available:
 The pattern is clear. Metrics, fitness functions, and tests are reactive — they evaluate code after generation. Human review is generative but does not scale. The only mechanism that is both generative (guides code before it exists) and scalable (does not require human intervention on every change) is externalized architectural knowledge — design decisions, component relationships, structural constraints, and the rationale behind them, captured in a form that both humans and AI can consult.
 
 That is what a specification is.
+
+A clarification on terminology: the term "specification" is overloaded. As Fowler acknowledges, it is "quite overloaded at the moment" [25]. An emerging taxonomy distinguishes several forms of externalized knowledge: rule files and constitutions capture conventions and constraints [52], guardrails capture reactive safety patterns [54], and specifications capture behavioral contracts and design rationale. A study of 401 repositories found that rule files fall into five categories (project context, conventions, guidelines, LLM directives, examples) — none of which are specifications in the architectural sense [52]. The Codified Context architecture proposes a 3-tier structure — constitutions, specialist agents, and knowledge bases — in which specifications are one component, not all of it [53]. This report's claim should be read precisely: the necessary mechanism is not "specifications" narrowly defined, but *externalized architectural knowledge* — of which specifications are the most complete form, though lighter-weight artifacts (rule files, constitutions) may suffice for simpler systems.
 
 This is not a claim that specifications are sufficient. They are not — quality gates, tests, and review remain necessary as verification layers. The claim is that specifications are *necessary*: no combination of reactive mechanisms alone can prevent the architectural degradation documented in Section 3, because reactive mechanisms can only reject bad output, not guide good generation. The evidence in Sections 2–5 establishes that AI needs architectural constraints; the analysis above establishes that specifications are the only constraint mechanism that operates before code is written.
 
@@ -272,7 +278,7 @@ Different tools and teams have adopted different levels of specification rigor:
 - **Spec-anchored.** The specification persists and evolves alongside the code over its lifecycle. Spec and code are kept in sync through continuous validation. When implementation reveals architectural knowledge that was not anticipated during design — a new boundary, an unforeseen constraint — that knowledge flows back into the spec. This is compound engineering (Section 8.1) applied to design and architecture: the same plan-work-assess-compound cycle, but what gets captured is not operational heuristics but design decisions, component relationships, and structural constraints. This is the alignment problem: maintaining the relationship between architectural knowledge and implementation knowledge as both evolve.
 - **Spec-as-source.** Humans maintain *only* the specification. Code is generated, marked as disposable, and regenerated whenever the spec changes. This is the most ambitious vision — and the one that runs directly into the limitations analyzed in Sections 6.1 and 6.2.
 
-Current adoption is concentrated at the spec-first level, which has the widest tooling support and the lowest overhead. Spec-as-source has attracted venture capital but remains unproven at scale. Spec-anchored — the middle ground that would keep architectural and implementation knowledge in continuous sync — is the least practiced. A survey of 514 respondents about Specification by Example — of whom 339 used SBE — found that only 12% maintain version-controlled specification files as their source of truth, and roughly one-third of those using examples do not automate their specifications at all, allowing them to go stale [24]. This survey measured pre-AI BDD/SbE teams rather than AI-era spec-anchored workflows, so the figure is indicative rather than directly applicable. No dominant tool or framework has emerged for this level. Whether this gap reflects inherent difficulty, insufficient tooling, or simply less investment is an open question.
+Current adoption is concentrated at the spec-first level, which has the widest tooling support and the lowest overhead. Spec-as-source has attracted venture capital but remains unproven at scale. Spec-anchored — the middle ground that would keep architectural and implementation knowledge in continuous sync — is the least practiced. A survey of 514 respondents about Specification by Example — of whom 339 used SBE — found that while 71% automated their specifications, only 12% version-controlled specification files as their source of truth [24]. The gap was in maintenance, not tooling — teams could automate specs but could not sustain them as living artifacts. This survey measured pre-AI BDD/SbE teams rather than AI-era spec-anchored workflows, so the figure is indicative rather than directly applicable. ThoughtWorks' Technology Radar Vol. 33 (November 2025) places spec-driven development in the "Assess" ring — worth exploring but not proven [49]. Developer *interest* is massive — GitHub star counts as of March 2026 include ~79k for spec-kit, ~42k for BMAD-METHOD, and ~33k for OpenSpec — but stars measure curiosity, not sustained adoption. Neither the Stack Overflow 2025 survey [17] nor the JetBrains 2024 Developer Ecosystem survey asks about SDD, which is itself evidence that the practice has not reached mainstream. No dominant tool or framework has emerged for this level. Whether this gap reflects inherent difficulty, insufficient tooling, or simply less investment is an open question.
 
 The analysis in this report provides a framework for understanding why the spectrum gets harder as it moves toward full disposability. Spec-first works because it captures architectural knowledge and lets the implementation accumulate its own knowledge through use. Spec-as-source requires specifications to capture *both* architectural and implementation knowledge — the gap that Section 6.2 identifies as fundamentally difficult to close.
 
@@ -280,7 +286,7 @@ The analysis in this report provides a framework for understanding why the spect
 
 A reasonable objection: if AI can extract architecture from code — as tools like ArchGuard already do — why maintain a separate specification? Because extraction recovers architecture *as-is*, not *as-intended*. It can't tell the difference between a deliberate design decision and accidental coupling that built up over years of patches. It can't recover *why* two services are separated or what failure mode the separation prevents. The specification's value is precisely this: it records how the system *should* be structured and why, giving you something to compare the actual architecture against.
 
-If these tools mature, they could make spec-anchored development practical by automating the continuous sync between specification and implementation that teams currently fail to sustain manually. Whether AI-assisted spec maintenance can deliver on this promise is an empirical question that current evidence cannot answer.
+If these tools mature, they could make spec-anchored development practical by automating the continuous sync between specification and implementation that teams currently fail to sustain manually. Whether AI-assisted spec maintenance can deliver on this promise is an empirical question — and early evidence is mixed. CODESYNC tested 14 LLMs on code evolution synchronization and found that LLMs "struggle with dynamic code evolution, even with advanced knowledge updating methods" [42]. At the same time, CodeDocSync showed that LLM-based documentation updates achieve a 0.86 average relevancy score — promising for surface-level updates, though specification maintenance requires deeper structural understanding than documentation [43]. The spec-kit community is actively wrestling with this gap: there is no built-in mechanism for automatic spec updates [44].
 
 **The waterfall risk.** ThoughtWorks [26] and Martin Fowler [25] have warned that rigid specifications could recreate waterfall's problems — slow feedback, premature commitment, specs that become outdated before implementation reveals their flaws. The framework from Section 6.2 clarifies this: specifications that capture *architectural knowledge* (structure, design decisions, contracts, constraints) stay stable as implementations change. Specifications that try to capture *implementation knowledge* (detailed behavioral requirements, edge case handling, performance specifics) go stale because implementation knowledge evolves through use, not through upfront design. The waterfall comparison is misleading: waterfall specifies once, implements, then discovers the spec was wrong. Spec-anchored development specifies continuously alongside implementation, with discoveries flowing back into the spec. The real concern isn't waterfall-style rigidity but ongoing maintenance cost. The SDD movement will succeed to the extent that it specifies architecture and avoids specifying implementation details.
 
@@ -292,7 +298,7 @@ The resemblance to documentation-driven development is not superficial — it's 
 
 That only 12% of teams currently sustain this practice has two honest interpretations. It might be a tooling gap — existing Specification by Example tools like Cucumber and SpecFlow require manual maintenance of spec-to-code mappings, which is exactly the overhead that causes teams to give up. If AI can automate this maintenance, the 12% figure reflects a solvable problem. Or it might reflect fundamental impracticality — that keeping specs synchronized with evolving code is just too costly regardless of tooling. This report can't resolve which is correct. It can note that previous SbE tools automated *running* specs but left *maintaining* specs to humans. AI-assisted spec maintenance is a genuinely new capability, not yet validated at scale. The recommendation for spec-anchored development depends on this capability maturing.
 
-This recommendation follows from the analytical framework developed in Sections 6.1 and 6.2. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. Empirical comparison is a critical gap in the current evidence base.
+This recommendation follows from the analytical framework developed in Sections 6.1 and 6.2. It has not been empirically validated against alternatives — no study compares outcomes of spec-anchored versus spec-first teams in AI-assisted development. The closest indirect evidence comes from TDD meta-analyses, which show quality benefits from living behavioral specifications — the nearest analog to spec-anchored development [36]. Tessl's evaluation found that AI agents with structured documentation "tiles" improved abstraction adherence by ~35%, though this is a vendor study [35]. Rosa et al.'s pre-registered empirical study — the first designed specifically to test specification-driven LLM code generation — is underway but not yet completed [37]. Empirical comparison remains a critical gap in the current evidence base.
 
 ### 8.3 Synthesis
 
@@ -349,6 +355,24 @@ https://arxiv.org/html/2512.05314
 [32] **Borg, Mones, Tornhill, Pruvost (2024):** *Increasing, not Diminishing: Investigating the Returns of Highly Maintainable Code.* Study of 46,000 source code files finding that improving code health from average to elite accelerates development by 43% and reduces defects up to 15x. Best Paper Award at the 7th ACM/IEEE International Conference on Technical Debt 2024. Authors are affiliated with CodeScene and Lund University.
 https://arxiv.org/abs/2401.13407
 
+[36] **Rafique & Misic (2013):** *The Effects of Test-Driven Development on External Quality and Productivity: A Meta-Analysis.* Meta-analysis of TDD studies showing quality benefits from living behavioral specifications. Published in *IEEE Transactions on Software Engineering* 39(6).
+https://ieeexplore.ieee.org/document/6197200/
+
+[39] **Bacchelli & Bird (2013):** *Expectations, Outcomes, and Challenges of Modern Code Review.* Microsoft Research study finding only ~15% of code review comments indicate defects; architectural issues are rarer still. Published at ICSE 2013.
+https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/ICSE202013-codereview.pdf
+
+[40] **Besker, Martini & Bosch (2018):** *Technical Debt Cripples Software Developer Productivity.* Study finding developers waste 23% of their time on technical debt even in teams using agile practices. Published in *Journal of Systems and Software*.
+https://www.semanticscholar.org/paper/Technical-Debt-Cripples-Software-Developer-A-Study-Besker-Martini/1b87365c776ca45ed2c624e3eef76845c7de8370
+
+[42] **CODESYNC (2025):** *CODESYNC: Synchronizing Large Language Models with Dynamic Code Evolution.* Tested 14 LLMs on code evolution synchronization; found LLMs "struggle with dynamic code evolution, even with advanced knowledge updating methods." Published at ICML 2025.
+https://arxiv.org/abs/2502.16645
+
+[43] **CodeDocSync (2025):** *CodeDocSync: LLM-Based Documentation Updates.* LLM-based documentation updates achieve 0.86 average relevancy score. Published at ENASE 2025.
+https://www.scitepress.org/Papers/2025/132868/132868.pdf
+
+[46] **Cui, Yin, Zhuo, Peng, Cui & David (2025):** *Generative AI and Worker Productivity: Evidence from Three Field Experiments.* Three RCTs across Microsoft, Accenture, and a Fortune 100 company (n=4,867) finding 26% more tasks completed with AI assistance. Did not measure code quality. Published in *Management Science*.
+https://pubsonline.informs.org/doi/10.1287/mnsc.2025.00535
+
 ### Preprints
 
 [13] *Self-Admitted Technical Debt in LLM Software.* Empirical study of 477 repositories examining how technical debt accumulates in LLM-related codebases. arXiv, January 2026.
@@ -359,6 +383,18 @@ https://arxiv.org/html/2512.04273
 
 [33] **Borg, Hagatulah, Tornhill, Soderberg (2026):** *Code for Machines, Not Just Humans: Quantifying AI-Friendliness with Code Health Metrics.* LLM-based refactoring experiments on 5,000 Python files finding AI increases defect risk by at least 30% on unhealthy code. Authors affiliated with CodeScene and Lund University. arXiv, January 2026.
 https://arxiv.org/abs/2601.02200
+
+[37] **Rosa, Grano, Halin & Sahraoui (2026):** *Specification-Driven Code Generation with Large Language Models.* Pre-registered empirical study (SANER 2026 Stage 1 Registered Report) — the first study designed specifically to test specification-driven LLM code generation. Not yet completed.
+https://codenote.net/en/posts/specification-driven-code-generation-llm-empirical-study/
+
+[45] **Xu, Xiao, Nan & Srinivasan (2025):** *Generative AI and Software Development Productivity: Evidence from GitHub Copilot.* Difference-in-differences study exploiting Copilot's June 2021 release as natural experiment. 2,755 repositories with repository and month-year fixed effects. Peripheral devs +43.5% commits, core devs -42.9%, review workload +6.5%, PR rework +2.4%. Preprint presented at WITS/CIST/INFORMS.
+https://arxiv.org/abs/2510.10165
+
+[52] **Jiang (2025):** *An Empirical Study of Rule Files in AI-Assisted Development.* Study of 401 repositories proposing 5-category taxonomy for rule files (Project, Convention, Guideline, LLM Directive, Example). These are explicitly not specifications. arXiv, December 2025.
+https://arxiv.org/html/2512.18925v2
+
+[53] **Jiang et al. (2025):** *Codified Context: A 3-Tier Architecture for AI-Assisted Development.* Case study proposing constitutions, specialist agents, and knowledge bases as three tiers of codified context. 25,000 lines of codified context for a 108,000-line system. Specifications are one tier, not all of it. arXiv preprint.
+https://arxiv.org/html/2602.20478v1
 
 ### Established Research Programs
 
@@ -371,8 +407,11 @@ https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/
 [18] **Google DORA (2025):** *State of AI-assisted Software Development 2025.* AI acts as an amplifier of existing organizational practices.
 https://dora.dev/research/2025/dora-report/
 
-[31] **Google DORA (2024):** *Accelerate State of DevOps Report 2024.* A 25% increase in AI tool adoption correlates with a 7.2% decrease in delivery stability and a 1.5% decrease in throughput.
+[31] **Google DORA (2024):** *Accelerate State of DevOps Report 2024.* A 25% increase in AI tool adoption correlates with a 7.2% decrease in delivery stability and a 1.5% decrease in throughput. Also reported +3.4% self-reported code quality.
 https://dora.dev/research/2024/dora-report/ (PDF: https://services.google.com/fh/files/misc/2024_final_dora_report.pdf)
+
+[48] **METR (2026):** *Uplift Measurement Update.* Documented severe selection bias problems in AI productivity research. Research program methodology update, February 2026.
+https://metr.org/blog/2026-02-24-uplift-update/
 
 ### Industry Reports and Surveys
 
@@ -388,8 +427,11 @@ https://www.it-cisq.org/the-cost-of-poor-quality-software-in-the-us-a-2022-repor
 [17] **Stack Overflow (2025):** *2025 Developer Survey — AI Section.* Annual survey of 49,000 developers. 46% distrust AI output vs. 33% who trust it; favorability dropped from 70%+ to 60%.
 https://survey.stackoverflow.co/2025/ai/
 
-[24] **Gojko Adzic (2020):** *Specification by Example — 10 Years Later.* Survey of 514 respondents on Specification by Example adoption; 339 used SBE, roughly one-third did not automate specifications.
+[24] **Gojko Adzic (2020):** *Specification by Example — 10 Years Later.* Survey of 514 respondents on Specification by Example adoption; 339 used SBE, 71% automated their specifications but only 12% version-controlled them as source of truth.
 https://gojko.net/2020/03/17/sbe-10-years.html
+
+[49] **ThoughtWorks (2025):** *Technology Radar Vol. 33.* Places spec-driven development in the "Assess" ring — worth exploring but not proven. November 2025.
+https://www.thoughtworks.com/radar/techniques/spec-driven-development
 
 ### Vendor Studies
 
@@ -399,14 +441,20 @@ https://www.gitclear.com/coding_on_copilot_data_shows_ais_downward_pressure_on_c
 [11] **GitClear (2025):** *AI Copilot Code Quality: 2025 Data.* Analysis of 211 million changed lines (2020–2024) showing refactoring decline from 25% to <10% and code duplication increase from 8.3% to 12.3%. Not peer-reviewed.
 https://www.gitclear.com/ai_assistant_code_quality_2025_research
 
-[20] **GitHub (2022):** *Research: Quantifying GitHub Copilot's Impact on Developer Productivity.* Vendor-conducted study finding developers completed tasks 55% faster with Copilot (n=95). Not peer-reviewed.
-https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness/
-
 [23] **GitHub (2025):** *spec-kit — Spec-Driven Development with AI.* Open-source framework for structuring AI-assisted development around specifications.
 https://github.com/github/spec-kit
 
 [34] **Faros AI (2025):** *The AI Productivity Paradox.* Engineering telemetry from 10,000+ developers across 1,255 teams. High-AI-adoption teams merge 98% more PRs but review time increases 91%, bugs increase 9% per developer, and delivery metrics remain flat. Faros AI is an engineering intelligence vendor; not peer-reviewed.
 https://www.faros.ai/blog/ai-software-engineering
+
+[35] **Tessl (2025):** *Proposed Evaluation Framework for Coding Agents.* Evaluation finding AI agents with structured documentation "tiles" improved abstraction adherence by ~35%. Vendor study with disclosed methodology.
+https://tessl.io/blog/proposed-evaluation-framework-for-coding-agents/
+
+[50] **Jellyfish (2025):** *AI Impact Data.* Analysis of 2.16 million PRs across 259 companies finding "no meaningful correlation between bugs and AI adoption level." Jellyfish is an engineering management vendor; not peer-reviewed.
+https://jellyfish.co/blog/ai-impact-data-june-2025/
+
+[51] **loveholidays / IBTimes (2025):** Case study of AI-assisted development at loveholidays. AI initially degraded quality without guardrails, then scaled to 50% agent-assisted code while maintaining quality after adding CodeScene guardrails. Vendor case study.
+https://www.ibtimes.com/rewriting-rules-code-loveholidays-validates-that-ai-scale-doesnt-have-result-technical-debt-3793098
 
 ### Practitioner Commentary
 
@@ -422,6 +470,14 @@ https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html
 [26] **ThoughtWorks (2025):** *Spec-Driven Development: Unpacking 2025's New Engineering Practice.* Industry analysis of SDD trends, including waterfall risk.
 https://www.thoughtworks.com/en-us/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices
 
+[41] **Robert C. Martin / InfoQ (2017):** Commentary on TDD and architecture. "The idea that the high level design and architecture of a system emerge from TDD is, frankly, absurd."
+https://www.infoq.com/news/2017/03/does-tdd-harm-architecture/
+
+### Practitioner Books
+
+[38] **Ford, Parsons, Kua & Sadalage (2022):** *Building Evolutionary Architectures.* Defines holistic fitness functions combining multiple architectural constraint mechanisms. O'Reilly, 2nd edition.
+https://www.oreilly.com/library/view/building-evolutionary-architectures/9781492097532/
+
 ### Practitioner Formulations
 
 [27] **Hyrum Wright:** *Hyrum's Law.* "With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of your system will be depended on by somebody."
@@ -432,3 +488,9 @@ https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agen
 
 [29] **Will Larson / Irrational Exuberance (2026):** *Learning from Every's Compound Engineering.* Independent analysis characterizing compound engineering as effective systematization of intuitive practices.
 https://lethain.com/everyinc-compound-engineering/
+
+[44] **spec-kit Discussion #152 (2025):** Community discussion on spec maintenance — no built-in mechanism for automatic spec updates.
+https://github.com/github/spec-kit/discussions/152
+
+[54] **GUARDRAILS.md:** Practitioner standard explicitly separating guardrails (reactive safety constraints) from specifications (behavioral contracts and design rationale).
+https://guardrails.md/
