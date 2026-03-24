@@ -6,7 +6,11 @@
 
 **March 15, 2026**
 
+*For a quick overview, read the blockquote at the start of each section.*
+
 ## The Problem
+
+> Poor software quality costs the US economy $2.4 trillion per year. AI was expected to reduce this burden — early evidence suggests it's making it worse.
 
 Poor software quality costs the US economy $2.41 trillion per year [5]. Technical debt consumes 20–40% of companies' entire technology budgets [4]. It would take 25 million developers working full-time for 9 years to pay off the debt that already exists [3].
 
@@ -42,6 +46,8 @@ The first three arguments are empirically grounded (Sections 2–5). The fourth 
 
 ## 1 What Is Software Rot?
 
+> Software degrades as its environment evolves while its structure stays static. 45% of the world's code is already fragile; paying off existing debt would take 25 million developers 9 years.
+
 **Software Rot** (or "Bit Rot") refers to the progressive degradation of a software system's usefulness or maintainability over time, even if the code itself remains unchanged. David Parnas formalized this as "software aging" — software degrades as its environment evolves while its internal structure remains static [1].
 
 Lehman's Laws of Software Evolution — confirmed across many studies — show that evolving software systems keep growing in size and complexity. A study of Apache Tomcat and Apache Ant found that software quality degrades over time too, not just size [2].
@@ -59,6 +65,8 @@ The scale of the problem is well-documented across multiple independent analyses
 ---
 
 ## 2 Architecture Prevents Rot — The Evidence
+
+> Good architecture is the best-established defense against rot. Poorly structured code has up to 31x more bugs; elite code health accelerates development by 43% and reduces defects up to 15x.
 
 Before examining AI's effects, we need to establish what the research says about architecture's role in preventing decay. The evidence goes back over fifty years.
 
@@ -87,6 +95,8 @@ A study of 46,000 source code files found that the returns on code quality are i
 ---
 
 ## 3 Evidence That AI Accelerates Software Rot
+
+> AI tools increase code volume while reducing structural upkeep — complexity up 42%, refactoring down from 25% to <10%, review time up 91%, speed gains gone within two months.
 
 A growing body of evidence suggests that AI-assisted development produces more code while reducing structural upkeep. The evidence here is newer and more mixed — ranging from vendor analyses to preprints to early peer-reviewed work — so claims are stated carefully.
 
@@ -128,6 +138,8 @@ Telemetry from over 10,000 developers across 1,255 teams reveals the same patter
 
 ## 4 Developer Sentiment Mirrors the Data
 
+> 46% of developers distrust AI output, yet 81% keep using it. Favorability dropped from 70%+ to 60% in one year.
+
 The 2025 Stack Overflow Developer Survey — the largest annual survey of professional developers (n=49,000) — reveals a widening trust gap [17]:
 
 - **46% distrust** AI output, versus only 33% who trust it; just 3% "highly trust" it.
@@ -139,6 +151,8 @@ The 2025 Stack Overflow Developer Survey — the largest annual survey of profes
 ---
 
 ## 5 The Two Premises
+
+> Architecture determines AI outcomes; AI without constraints degrades quality. Therefore AI needs externalized architectural knowledge before code is written.
 
 The preceding sections established two empirical claims. This section states them explicitly, because everything that follows depends on them.
 
@@ -176,6 +190,8 @@ This is not a recommendation — it is a logical consequence of the evidence. Th
 ---
 
 ## 6 The Limits of Disposable Code
+
+> You can't just regenerate complex code — it accumulates knowledge the spec doesn't capture. Making code safely disposable requires exactly the architectural discipline that prevents rot in the first place.
 
 The preceding sections presented evidence. What follows — through this section and Section 8.1 — is primarily analysis: reasoning from that evidence and from established software engineering principles, rather than reporting new findings.
 
@@ -236,6 +252,8 @@ Karpathy's own trajectory illustrates the pattern. He coined "vibe coding" for s
 
 ## 7 Why Specifications
 
+> Every alternative constraint mechanism is either reactive (metrics, tests, fitness functions) or doesn't scale (human review). Specifications are the only mechanism that is both generative and scalable.
+
 Section 5 established that AI-assisted development requires externalized architectural knowledge that constrains code before it is written. This section examines what form those constraints can take.
 
 Five mechanisms are available:
@@ -263,6 +281,8 @@ This is not a claim that specifications are sufficient. They are not — quality
 ---
 
 ## 8 Toward Spec-Anchored Development
+
+> Spec-anchored development — maintaining a living specification alongside the code — is the most promising response. AI makes specs more valuable and could help maintain them.
 
 ### 8.1 Compound Engineering: The Broader Pattern
 
