@@ -96,7 +96,7 @@ A study of 46,000 source code files found that the returns on code quality are i
 
 ## 3 Evidence That AI Accelerates Software Rot
 
-> AI tools increase code volume while reducing structural upkeep — complexity up 42%, refactoring down from 25% to <10%, review time up 91%, speed gains gone within two months.
+> AI tools increase code volume while reducing structural upkeep — complexity up 41.6%, refactoring down from 25% to <10%, review time up 91%, speed gains significant only in the first two months.
 
 A growing body of evidence suggests that AI-assisted development produces more code while reducing structural upkeep. The evidence here is newer and more mixed — ranging from vendor analyses to preprints to early peer-reviewed work — so claims are stated carefully.
 
@@ -191,7 +191,7 @@ This is not a recommendation — it is a logical consequence of the evidence. Th
 
 ## 6 The Limits of Disposable Code
 
-> You can't just regenerate complex code — it accumulates knowledge the spec doesn't capture. Making code safely disposable requires exactly the architectural discipline that prevents rot in the first place.
+> Every non-trivial system has two sources of truth: specifications capture architectural knowledge (structure and design decisions), code captures implementation knowledge (edge cases, workarounds, accumulated behavior). Their divergence is itself a form of rot — and regenerating from the spec alone cannot recover what the code knows.
 
 The preceding sections presented evidence. What follows — through this section and Section 8.1 — is primarily analysis: reasoning from that evidence and from established software engineering principles, rather than reporting new findings.
 
@@ -282,7 +282,7 @@ This is not a claim that specifications are sufficient. They are not — quality
 
 ## 8 Toward Spec-Anchored Development
 
-> Spec-anchored development — maintaining a living specification alongside the code — is the most promising response. AI makes specs more valuable and could help maintain them.
+> Spec-anchored development — maintaining a living specification alongside the code — is the most promising response, though unproven at scale. AI makes specs more valuable and could help maintain them.
 
 ### 8.1 Compound Engineering: The Broader Pattern
 
